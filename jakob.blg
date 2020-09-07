@@ -1,0 +1,15 @@
+[1] Config.pm:302> INFO - This is Biber 2.11
+[1] Config.pm:305> INFO - Logfile is 'jakob.blg'
+[87] biber-MSWIN32:313> INFO - === 
+[222] Biber.pm:371> INFO - Reading 'jakob.bcf'
+[400] Biber.pm:857> INFO - Found 31 citekeys in bib section 0
+[431] Biber.pm:3976> INFO - Processing section 0
+[483] Biber.pm:4136> INFO - Looking for bibtex format file 'references.bib' for section 0
+[516] bibtex.pm:1500> INFO - LaTeX decoding ...
+[612] bibtex.pm:1316> INFO - Found BibTeX data source 'references.bib'
+[1458] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[1459] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[1459] Biber.pm:3804> INFO - Sorting list 'nty/global//global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[1460] Biber.pm:3810> INFO - No sort tailoring available for locale 'en-US'
+[1607] bbl.pm:617> INFO - Writing 'jakob.bbl' with encoding 'UTF-8'
+[1632] bbl.pm:720> INFO - Output to jakob.bbl
