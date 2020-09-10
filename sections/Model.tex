@@ -4,16 +4,16 @@ This section describes firstly the RNN structure and secondly the regularization
 
 \section{Recurrent Neural Network}
 
-The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input, one hidden and one output layer. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state can be included but $h_0$ the initial hidden state is set to the zero vector.
+The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$ and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state can be included but $h_0$ the initial hidden state is set to the zero vector in this thesis.
 
 The propagation through the network of an input sequence \(i_1, i_2, ... , i_T\) is performed in the following algorithm:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
         \State{$u_t \gets W_{hi}i_t + W_{hh}h_{t-1} + b_h$}
-        \State{$h_t \gets a(u_t)$}
+        \State{$h_t \gets a_h(u_t)$}
         \State{$o_t \gets W_{oh} + b_o $}
-        \State{$z_t \gets s(o_t)$}
+        \State{$z_t \gets a_o(o_t)$}
     \EndFor
 \end{algorithmic}
 
@@ -21,7 +21,7 @@ Where $ a_h(*)$ and $a_o(*)$ are nonlinear activation functions for the hidden a
 
 \[C(z, y) = \sum_{t=1}^{T}C(z_t; y_t)\]
 
-With the cost function a derivative for the RNNs can be computed by the backpropagation through time algorithm:
+for some target sequence $y_t$. With the cost function a derivative for the RNNs can be computed by the backpropagation through time algorithm, BPTT:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
