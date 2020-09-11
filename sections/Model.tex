@@ -38,11 +38,37 @@ for some target sequence $y_t$. With the cost function a derivative for the RNNs
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-As mentioned there are difficulties in training RNNs. Included in this thesis is the Hessian-Free, HF, optimization, which is a second order method but combined with the R-method the above algorithm is essentially sufficient. However, as stated in the work, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. Described in the algorithm below is the product \(Gv\) for some vector $v$:
+As mentioned there are difficulties in training RNNs. Included in this thesis is the Hessian-Free, HF, optimization, which is a second order method but combined with the R-method the two above algorithms are essentially sufficient. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
+
+\[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
+
+As a derivative, the $R_v$ operator obeys the following rules of differentiation:
+
+\begin{enumerate}
+    \item $\begin{aligned}[t]
+        R_v(x+y) &= R_vx + R_vy
+    \end{aligned} $
+    \item $\begin{aligned}
+        R_v(xy) &= (R_vx)y + (R_vy)x 
+    \end{aligned} $
+    \item $\begin{aligned}
+        R_v(\gamma(x)) &= (R_vx) J_{\gamma}(x)
+    \end{aligned}$
+\end{enumerate}
+
+$J_\gamma(x)$ denotes the Jacobian of $\gamma$. The $v$ will be henceforth suppressed and implied for compact notation. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ establishes the algorithm in terms of the above. A rigorous treatment can be found in \cite{suts}.
+
+However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. Described in the algorithm below is the product \(Gv\) for some vector $v$:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
-        \State{$do_t \gets a_o'(o_t) dC(z_t; y_t)/dz_t $}
+        \State{$Ru_t \gets R{W_{hi}}i_t + RW_{hh}h_{t-1} + W_{hh}Rh_{t-1} + Rb_h$}
+        \State{$Rh_t \gets a_h'(u_t)Ru_t$}
+        \State{$Ro_t \gets RW_{oh} + Rb_o $}
+        \State{$Rz_t \gets a_o'(o_t)Ro_t$}
+    \EndFor
+    \For{$t$ from $1$ to $T$}
+        \State{$Rdo_t \gets a_o'(o_t) dC(z_t; y_t)/dz_t $}
         \State{$db_o \gets db_o + do_t$}
         \State{$dW_{oh} \gets dW_{oh} + db_oh_t^\top $}
         \State{$dh_t \gets dh_t + W_{oh}^\top do_t$}
@@ -54,3 +80,5 @@ As mentioned there are difficulties in training RNNs. Included in this thesis is
     \EndFor
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
+
+The $Gv$ product can be achieved by simply disregarding none differential terms, treating them as constant. 
