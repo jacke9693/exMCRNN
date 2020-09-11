@@ -6,7 +6,7 @@ This section describes firstly the RNN structure and secondly the regularization
 
 The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$ and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state $h_0$ can be included but $h_0$ the initial hidden state is set to the zero vector in this thesis.
 
-The propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm:
+The forward propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
@@ -50,7 +50,7 @@ As a derivative, the $R_v$ operator obeys the following rules of differentiation
     \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
 \end{enumerate}
 
-where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ establishes the algorithm for calculating the product in terms of the above algorithms. A rigorous treatment can be found in \cite{suts}.
+where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $R_vb = b^v$. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ establishes the algorithm for calculating the product in terms of the above algorithms, simply a forward followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
 However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. Described in the algorithm below is the product \(Gv\) for some vector $v$:
 
