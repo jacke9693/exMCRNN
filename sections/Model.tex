@@ -50,9 +50,9 @@ As a derivative, the $R_v$ operator obeys the following rules of differentiation
     \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
 \end{enumerate}
 
-where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $R_vb = b^v$. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ establishes the algorithm for calculating the product in terms of the above algorithms, simply a forward followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
+where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $R_vb = b^v$ establishes the parameter $b$ with respect to $v$. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ establishes the algorithm for calculating the product in terms of the above algorithms, simply a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
-However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. Described in the algorithm below is the product \(Gv\) for some vector $v$:
+However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. There is another reason for using $G$ instead which relates to the "matching" of the cost function with the output function, this makes the $G$ matrix independent of the target $y$ and positive semi definite \cite{Martens2012}. Described in the algorithm below is the product \(Gv\) for some vector $v$:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
@@ -75,13 +75,29 @@ However, as stated in the work \cite{suts}, the approximation called the Gaus-Ne
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-The $Gv$ product can be achieved from $Hv$ by simply disregarding derivatives of none differential terms, treating them as constant.
+The $Gv$ product can be achieved from $Hv$ by simply disregarding derivatives of none differential terms, treating them as constant. Once more this is further discussed in \cite{suts}.
 
-For second order methods, including the HF approach, other measures need to be incorporated to guarantee stability and convergence. The main constitutent of HF is CG, the conjugate gradient method. For this a sub-objective based on a approximation of the objective $f(\theta)$ is minimized by the CG. The iterative minimization, specifically, given a parameter setting $\theta_n$ for a $\theta_{n+1}$ is found by partially optimizing \[q_{\theta_n} \equiv M_{\theta_n}(\theta) + \lambda R_{\theta_n}(\theta) \]. A simplified HF algorithm is stated below:
+For second order methods, including the HF approach, other measures need to be incorporated to guarantee stability and convergence. The main constitutent of HF is CG, the conjugate gradient method. For this a sub-objective based on an approximation of the objective $f(\theta)$ is minimized by the CG. The iterative minimization, specifically, given a parameter setting $\theta_n$ for a $\theta_{n+1}$ is found by partially optimizing \[q_{\theta_n} (\theta) \equiv M_{\theta_n}(\theta) + \lambda R_{\theta_n}(\theta) \], where \[ M_{\theta_n}(\theta) = f(\theta_n) + f'(\theta_n)^\top \delta_n + \frac{\delta_n^\top C_n \delta_n}{2},\] and $C_n$ is an approximation to the curvature of $f$ at $\theta_n$. $\delta_n = \theta - \theta_n$ is the $n^{th}$ step. The $\lambda R_{\theta_n}(\theta)$ is the regularization term where $\lambda$ is a size parameter and $R_{\theta_n}(\theta)$ is a dampening term, penalizing the size of the $\delta_n$ according to Tikhonov-dampening $R_{\theta_n}(\theta) = \norm{\delta}^2/2$. The quadratic function to be minimized is now set-up and the CG algorithm is run accordingly:
+
+\begin{algorithm}
+    \caption{CG - Conjugate Gradient, truncated}
+    \begin{algorithmic}[1]
+        \State{Define quadratic objective $\phi(z) = z^\top Bz/2 + b^\top z$ where $B = C_n + \lambda$ and $b = f'(\theta_n)$, $\nabla \phi(z_i) = B z_i + b$}
+        \State{Let $i=0$ and $z_0 = \delta_{n-1}$ and $d_i=d_0=-\nabla \phi (z_0)$}
+        \State{Compute step size $\alpha = -\frac{d_i (Bz_i + b)}{d_i^\top B d_i}$}
+        \State{Update $z_{i+1} = z_i + \alpha d_i$}
+        \State{Update $d_{i+1} = -\nabla \phi(z_{i+1}) + \beta_i d_i$ where $\beta_i = \frac{\nabla \phi(z_i) B d_i}{d_i^\top B d_i}$}
+        \State{Repeat steps $4, 5$ until truncation criteria is met.}
+    \end{algorithmic}
+\end{algorithm}
+
+As can be seen, only the product $Bz$ is ever needed. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < 0.0001.\]  Choosing $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$.
+
+A simplified HF algorithm is stated below:
 
 \begin{algorithm}
     \caption{HF - simplified}
-    \begin{algorithmic}
+    \begin{algorithmic}[1]
         \State{$\delta_0 \gets 0$}
         \State{$ \lambda \gets 50$}
         \State{assign mini-batch for each n, $\{U_n\}$}
@@ -90,7 +106,22 @@ For second order methods, including the HF approach, other measures need to be i
         \State{compute $b = -\frac{1}{\abs{U_n}}\sum_{(x,y)\in U_n} f'((x,y);\theta_n)$}
         \State{find $\delta_{n+1}$ with CG on $z^\top B z/2 + b^\top z $, $z_0 = \delta_{n-1}$}
         \State{adjust $\lambda$ according to Levenburg-Marquardt heuristic}
-        \State{adjust $\delta_{n}\alpha$, where $\alpha$ is calculated with a back-tracking line search}
+        \State{adjust $\delta_{n+1}\alpha$, where $\alpha$ is calculated with a back-tracking line search}
         \EndFor
     \end{algorithmic}
 \end{algorithm}
+
+The Levenburg-Marquardt heuristic is simply as follows:
+
+\[ \rho = \frac{f(\theta_n + \delta_n) - f(\theta_n)}{q_{\theta_n} (\delta)}\]
+
+\begin{algorithmic}[1]
+    \If{$\rho > 3/4 $}
+    \State{$\lambda\gets 2/3 \lambda$}
+    \EndIf
+    \If{$\rho<1/4$}
+    \State{$\lambda \gets 3/2\lambda$}
+    \EndIf
+\end{algorithmic}
+
+The last line of defense is the standard line searching. Provided that $\delta_n$ is a descent direction $(\delta_n^\top \nabla f(\theta_n) < 0)$ follows that for a small, non-zero value $\alpha$ we will have \[f(\theta_n + \alpha \delta_n) = f(\theta_{n+1}) < f(\theta_n)\] ergo $\delta_n$ will be descent direction as long as $B$ is positive definite, $\nabla f(\theta_n)$ and $M$ is optimized partially with CG\cite{Martens2012}. 
