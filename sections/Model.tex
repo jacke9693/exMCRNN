@@ -137,3 +137,20 @@ where $c$ is a small constant $10^{-2}$.
 
 \section{Monte Carlo Regularization}
 
+As mentioned above, the algorithm itself gathers from the grand canonical ensemble simulation. The operators corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. 
+
+\begin{algorithm}
+    \caption{Monte Carlo regularization}
+    \begin{algorithmic}[1]
+        \State{Randomly choose to perturb the NN}
+        \If{perturb}
+        \State{Calculate $E$ on the selection set}
+        \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set}
+        \State{Reject any $\Delta E < 0$}
+        \State{Calculate softmax of the resulting $\Delta E$, ergo create probability distribution over these moves}
+        \State{Randomly choose one move}
+        \EndIf
+    \end{algorithmic}
+\end{algorithm}
+
+The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability.
