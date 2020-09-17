@@ -2,6 +2,38 @@
 
 This section describes firstly the RNN structure and secondly the regularization.
 
+\section{Differentiable Computational Graph}
+
+Before introducing artificial neural networks as such, the mathematical foundation needs to be described as the regularization, to be well-defined, couples to the underlying theory of graphs. Most importantly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
+
+Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of ancestors $A_i$, determining its input, and a twice differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph:
+
+\begin{algorithmic}[1]
+    \State{Let $\theta$ be distributed between the input nodes $z_i, i \in I$}
+    \For{$i=1$ to $N$ if $i\notin I$}
+    \State{$x_i \gets \text{concat}_{j\in A_i}z_j$}
+    \State{$z_i \gets f_i(x_i)$}
+    \EndFor
+    \Return{$F(\theta) = z_N$}
+\end{algorithmic}
+
+where every node $z_i$ can be vector valued.
+
+Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality $z_N$:
+
+\begin{algorithmic}[1]
+    \State{$dz_N \gets v$}
+    \State{$dz_i \gets 0$ for $i<N$}
+    \For{$i = N$ to $1$ if $i \notin I$}
+    \State{$dx_i \gets f_i'(x_i)^\top dz_i$}
+    \For{$j \in A_i $}
+    \State{$dz_j \gets dz_j + \text{unconcat}^jdx_i$}
+    \EndFor
+    \EndFor
+    \State{concatenate $dz_i$ for $i \in I$ onto $d\theta$}
+    \Return{$d\theta = F'(\theta)^\top v$ }
+\end{algorithmic}
+
 \section{Recurrent Neural Network}
 
 The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$ and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state $h_0$ can be included but $h_0$ the initial hidden state is set to the zero vector in this thesis.
