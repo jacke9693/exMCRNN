@@ -195,7 +195,7 @@ where $c$ is a small constant $10^{-2}$.
 
 \section{Monte Carlo Regularization}
 
-As mentioned above, the algorithm itself gathers from the grand canonical ensemble simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. 
+As mentioned above, the algorithm itself gathers from the grand canonical ensemble, GCE, simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. 
 
 \begin{algorithm}
     \caption{Monte Carlo regularization}
@@ -213,4 +213,6 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
     \end{algorithmic}
 \end{algorithm}
 
-The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability. This is to avoid a last minute perturbation. The purpose of computing the difference energy solely on the selection set is due to the size of the training set being to large and to improve generalization, thus an external set was used. The rejection can be softened to allow small decreases in performance, however, a priori there is no motivation for that. The distribution used was softmax, however, a preference for some moves can be established with a more askew distribution, also to better reflect the relative $\Delta E$ differences. Then randomly choosing one move was to better survey the effects of the different moves. 
+The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability. This is to avoid a last minute perturbation. The purpose of computing the difference energy solely on the selection set is due to the size of the training set being to large and to improve generalization, thus an external set was used. The rejection can be softened to allow small decreases in performance, however, a priori there is no motivation for that. The distribution used was softmax, however, a preference for some moves can be established with a more askew distribution, also to better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to better survey the effects of the different moves. 
+
+The relation to the GCE simulation is the insertion and deletion of nodes. Disregarding the size or the amount of nodes of the network, as no favor in size was selected. A possibility is the preference of small networks, however, accurately balancing this in terms of probabilities is for another thesis. 
