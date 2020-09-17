@@ -1,12 +1,12 @@
 \chapter{Model Description}
 
-This section describes firstly the RNN structure and secondly the regularization.
+This section describes firstly the underlying theory of computational graphs, secondly the RNN structure and lastly the regularization.
 
 \section{Differentiable Computational Graph}
 
-Before introducing artificial neural networks as such, the mathematical foundation needs to be described as the regularization, to be well-defined, couples to the underlying theory of graphs. Most importantly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
+Before introducing artificial neural networks as such, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Most importantly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
 
-Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of ancestors $A_i$, determining its input, and a twice differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph:
+Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of ancestors $A_i$, determining its input, and a differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph:
 
 \begin{algorithmic}[1]
     \State{Let $\theta$ be distributed between the input nodes $z_i, i \in I$}
@@ -14,12 +14,12 @@ Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisti
     \State{$x_i \gets \text{concat}_{j\in A_i}z_j$}
     \State{$z_i \gets f_i(x_i)$}
     \EndFor
-    \Return{$F(\theta) = z_N$}
+    \State{\Return{$F(\theta) = z_N$}}
 \end{algorithmic}
 
 where every node $z_i$ can be vector valued.
 
-Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality $z_N$:
+Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality of $z_N$:
 
 \begin{algorithmic}[1]
     \State{$dz_N \gets v$}
@@ -31,8 +31,44 @@ Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cos
     \EndFor
     \EndFor
     \State{concatenate $dz_i$ for $i \in I$ onto $d\theta$}
-    \Return{$d\theta = F'(\theta)^\top v$ }
+    \State{\Return{$d\theta = F'(\theta)^\top v$ }}
 \end{algorithmic}
+
+$\text{unconcat}$ being the inverse of $\text{concat}$ such that: if $x_i = \text{concat}_{j\in A_i} z_j$ then $\text{unconcat}^j x_i = z_j$. 
+
+This formalism allows for easy and automated application of the R-operator. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
+
+\[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
+
+As a derivative, the $R_v$ operator obeys the following rules of differentiation:
+
+\begin{enumerate}
+    \item $R_v(x+y) = R_vx + R_vy$
+    \item $ R_v(xy) = (R_vx)y + (R_vy)x $
+    \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
+\end{enumerate}
+
+where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $Rb = b^v$ establishes the parameter $b$ with respect to $v$.
+
+Given the above, computation of $R(F(\theta))$ is described in the following algorithm:
+
+\begin{algorithmic}[1]
+    \State{distribute input $v$ across input nodes $Rz_i$ for $i \in I$}
+    \For{$i = 1$ to $N$ if $i \notin I$ do}
+    \State{$Rx_i \gets \text{concat} Rz_j$}
+    \State{$Rz_i \gets f_i'(x_i) R x_i$}
+    \EndFor
+    \State{\Return{$Rz_N = F'(\theta) v $}}
+\end{algorithmic}
+
+The algorithms for differentiation can be proven with structural induction over the graphs and is omitted. The needs for this in the Hessian-Free approach becomes clear with the relation $Hv = R(\nabla f(\theta))$, where $H$ is the Hessian of $f$. 
+
+From two graphs $G_1 = (V_1,E_1)$ and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, deletion of either node $i$ or weight $i,j$ and the copying of node $i$, required for the moves or changes to the graph, relate to the binary operators in the following way:
+
+\begin{enumerate}
+    \item Copying $C_i$: $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup V_2)$ where $V_1 = V_2 / V_i$ 
+    \item Deletion $D_i $: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap V_2)$ where $V_2 = V_1 / V_i$ or $E_2 = E_1 / E_i$
+\end{enumerate}
 
 \section{Recurrent Neural Network}
 
@@ -70,19 +106,9 @@ for some target sequence $y_t$. With the cost function a derivative for the RNNs
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-As mentioned there are difficulties in training RNNs, resorting to second order methods, however, solves some issues. Included in this thesis is the Hessian-Free, HF, optimization, which is a second order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method the two above algorithms are essentially sufficient for calculating the product $Hv$. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
+As mentioned there are difficulties in training RNNs, resorting to second order methods, however, solves some issues. Included in this thesis is the Hessian-Free, HF, optimization, which is a second order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method the two above algorithms are essentially sufficient for calculating the product $Hv$. 
 
-\[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
-
-As a derivative, the $R_v$ operator obeys the following rules of differentiation:
-
-\begin{enumerate}
-    \item $R_v(x+y) = R_vx + R_vy$
-    \item $ R_v(xy) = (R_vx)y + (R_vy)x $
-    \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
-\end{enumerate}
-
-where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $R_vb = b^v$ establishes the parameter $b$ with respect to $v$. The relation between the Hessian and R-operator $Hv = R(\nabla(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, simply a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
+The relation between the Hessian and R-operator $Hv = R(\nabla f(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, simply a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
 However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. There is another reason for using $G$ instead which relates to the "matching" of the cost function with the output function, this makes the $G$ matrix independent of the target $y$ and positive semi definite \cite{Martens2012}. Described in the algorithm below is the product \(Gv\) for some vector $v$, with "matching" cost and output function:
 
@@ -181,7 +207,9 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
         \State{Reject any $\Delta E < 0$}
         \State{Calculate softmax of the resulting $\Delta E$, ergo create probability distribution over these moves}
         \State{Randomly choose one move}
+        \State{\Return New NN}
         \EndIf
+    \State \Return{Old network}
     \end{algorithmic}
 \end{algorithm}
 
