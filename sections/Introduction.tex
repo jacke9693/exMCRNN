@@ -1,7 +1,9 @@
 
 \chapter{Introduction}
 
-In this master thesis the prospect of a recurrent neural network, RNN, with a stochastic structure varying in time to regularize it, Monte Carlo regularization, MCR, is presented. A regularization technique is introduced to combat overfitting for neural networks. Inspiration is drawn from biology where neural networks organically evolve their structure, formalized in the concept of a Markov process. How this algorithm is structured, however, is inspired from physics processes of grand-canonical ensembles or where energy differences drive the algorithm. Evaluating the energy differences of either pruning or duplicating of neurons and regulating the structure.
+In this master thesis the prospect of a recurrent neural network, RNN, with a stochastic structure varying in time to regularize it, Monte Carlo regularization, MCR, is presented. A regularization technique is introduced to combat overfitting for neural networks. Inspiration is drawn from biology where neural networks organically evolve their structure, formalized in the concept of a Markov process. How this algorithm is structured, however, is inspired from physics processes of grand-canonical ensembles or physical processes where energy differences drive the algorithm. Evaluating the energy differences of either pruning or duplicating of neurons and regulating the structure.
+
+\section{Recurrent Neural Network - History}
 
 RNNs are a class derived from feedforward neural networks with iteration over a fixed structure to achieve temporal dynamics \cite{DRNNS}. Forming along the time axis is a directed graph, achieving dynamic behavior in the sense of memory. Utilizing the memory to capture patterns also requires dynamical programming for the necessity of mapping long sequences to short. The RNNs excel at pattern recognition in data sequences e.g. natural language processing, machine translation and most commonly speech recognition \cite{handwriting}. Their recurrent structure could strain this process of regularization and are therefore tested on.
 
@@ -24,6 +26,8 @@ From the RNN formulation above a problem with RNNs is the mapping of long to sho
 The active field of capturing long-time dependencies has been a focus especially for RNNs and in different ways avoiding the structure altogether seems to be the most recent advancements. However, the application of an in part pruning algorithm on a RNN is of interest as this could point to the versatility and benefit of such algorithms.
 
 Challenges ahead, besides the ones mentioned, include faster learning, representational capacity and weights as states \cite{suts}. Faster learning relates to the high cost of calculating the gradient on long sequences, methods to approximate derivatives under such circumstances quickly and efficiently are crucial. The two latter pertain to the size of the hidden state, the information and computation related to a sequence, by increasing the size it is possible to achieve longer-term temporal dependencies. This is where the stochastic nature of the proposed algorithm, changing the structure through time, in part aims to increases the size of the hidden state.
+
+\section{Regularization}
 
 Besides these challenges for RNNs a more general problem for any statistical model is overfitting. This phenomenon is spawned when an NN model includes more adjustable parameters then necessary or an overly complex way of achieving fitness is used. Specifically overfitting violates Occam's razor in which any given complex function is a priori less probable than any given simple function. Battling overfitting regularization schemes are introduced. By prolonging the training scheme, overfitting is increasingly likely to happen and the necessity for regularization increases.
 
