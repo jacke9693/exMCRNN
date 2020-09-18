@@ -4,7 +4,7 @@ This section describes firstly the underlying theory of computational graphs, se
 
 \section{Differentiable Computational Graph}
 
-Before introducing artificial neural networks as such, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Most importantly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
+Before introducing artificial neural networks as such, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Firstly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
 
 Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of ancestors $A_i$, determining its input, and a differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph:
 
@@ -145,12 +145,12 @@ For second order methods, including the HF approach, other measures need to be i
         \While{truncation criteria is not met}
         \State{Compute step size $\alpha = -\frac{d_i (Bz_i + b)}{d_i^\top B d_i}$}
         \State{Update $z_{i+1} = z_i + \alpha d_i$}
-        \State{Update $d_{i+1} = -\nabla \phi(z_{i+1}) + \beta_i d_i$ where $\beta_i = \frac{\nabla \phi(z_i) B d_i}{d_i^\top B d_i}$}
+        \State{Update $d_{i+1} = -\nabla \phi(z_{i+1}) + \beta_i d_i$ where $\beta_i = \frac{\nabla \phi(z_{i+1}) B d_i}{d_i^\top B d_i}$}
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
 
-As can be seen, only the product $Bz$ or $Bd$ is ever needed. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < 0.0001.\]  Choosing $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$.
+As can be seen, only the product $Bz$ or $Bd$ is ever needed, thus free of the Hessian. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < 0.0001.\]  Choosing $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$.
 
 A simplified HF algorithm is stated below:
 
@@ -204,6 +204,7 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
         \If{perturb}
         \State{Calculate $E$ on the selection set}
         \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set}
+        \State{For each move, choose the best for which $\Delta E$ is maximised}
         \State{Reject any $\Delta E < 0$}
         \State{Calculate softmax of the resulting $\Delta E$, ergo create probability distribution over these moves}
         \State{Randomly choose one move}
@@ -215,4 +216,4 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
 
 The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability. This is to avoid a last minute perturbation. The purpose of computing the difference energy solely on the selection set is due to the size of the training set being to large and to improve generalization, thus an external set was used. The rejection can be softened to allow small decreases in performance, however, a priori there is no motivation for that. The distribution used was softmax, however, a preference for some moves can be established with a more askew distribution, also to better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to better survey the effects of the different moves. 
 
-The relation to the GCE simulation is the insertion and deletion of nodes. Disregarding the size or the amount of nodes of the network, as no favor in size was selected. A possibility is the preference of small networks, however, accurately balancing this in terms of probabilities is for another thesis. 
+The relation to the GCE simulation is the insertion and deletion of nodes. Disregarding the size or the amount of nodes of the network, as no favor in size was selected. A possibility is the preference of small networks, however, accurately balancing this in terms of probabilities is for another thesis. Similarly as with configurational bias, a randomly generated node seems unlikely to produce an improvement and therefore it is sampled from an existing node. The parameters related to the new node is then slightly, randomly, changed. 
