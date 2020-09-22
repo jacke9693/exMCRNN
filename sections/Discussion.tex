@@ -1,3 +1,5 @@
 \chapter{Discussion}
 
+As can be seen in the results, the algorithm performs well for small to medium sized NN. For the larger NNs, the increased size makes the induced changes relatively smaller, a remedy could be to perform multiple perturbations. For the really small NNs, the regularization was not so active as all moves or changes were rejected. This hints that, as expected, the really small NNs are slimmed and do not benefit from pruning or growing. 
 
+To avoid the variation seen in the cross-entropy, bigger mini-batches could be used but this relates to the HF approach rather than the regularization. A way to combat the variation more akin to the regularization could be to employ algorithms employed in micro or canonical ensembles, rather than grand canonical ensemble.
