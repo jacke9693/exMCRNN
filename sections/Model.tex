@@ -1,6 +1,6 @@
 \chapter{Model Description}
 
-This section describes firstly the underlying theory of computational graphs, secondly the RNN structure and lastly the regularization.
+This section describes firstly the underlying theory of computational graphs, secondly the RNN structure and lastly the regularization. A lot of this section is based on the work of \textcite{suts} and \textcite{Martens2012}.
 
 \section{Differentiable Computational Graph}
 
@@ -150,7 +150,7 @@ For second order methods, including the HF approach, other measures need to be i
     \end{algorithmic}
 \end{algorithm}
 
-As can be seen, only the product $Bz$ or $Bd$ is ever needed, thus free of the Hessian. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < 0.0001.\]  Choosing $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$.
+As can be seen, only the product $Bz$ or $Bd$ is ever needed, thus free of the Hessian. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < c.\]  Choosing $c = 0.0001$ and $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$.
 
 A simplified HF algorithm is stated below:
 
