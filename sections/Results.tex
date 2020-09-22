@@ -8,12 +8,44 @@ The activation for the hidden layer $a_h(x) = 1/(1 + e^{-x})$ is the sigmoid. Th
 
 For the changes in the RNN, a relaxation function $e(5/(2n)) - 1$ where $n$ is the current epoch, was used to regulate changes and make them less probable as the training progresses.
 
-\section{Size}
+\section{Sizes and Plots}
 
-Different initial sizes were studied, comparing with and without the regularization for each size. The sizes were $27, 37, 47, 57, 67$, from which the training started, however, the RNNs sizes with regularization changed throughout the training. The way in which this happened is ignored as the moves are incomparable, removing a weight vs a node is an altogether different change and all the moves are treated without bias in the algorithm.   
+Different initial sizes were studied, comparing with and without the regularization for each size. The sizes were $27, 37, 47, 57, 67$, from which the training started, however, the RNNs sizes with regularization changed throughout the training. The way in which this happened is ignored as the moves are incomparable, removing a weight vs a node is an altogether different change and all the moves are treated without bias in the algorithm. 
 
-As can be seen, an accuracy of the different RNNs after training.
+In the below plots, w in the legends stands for with the algorithm. 
 
-As can be seen, a plot of energy during training. One on the selection set and one on the current mini-batch.
+\begin{figure}[h]
+    \includegraphics[width = \textwidth]{imgs/ps.pdf}
+    \caption{Cross-entropy plot on the mini-batch for various initial sizes of the RNN, omitting first epoch.}
+    \label[fig]{E}
+\end{figure}
 
-\section{}
+\begin{figure}[h]
+    \includegraphics[width = \textwidth]{imgs/ps1.pdf}
+    \caption{Cross-entropy plot on the selection set for various initial sizes of the RNN, omitting first epoch.}
+    \label[fig]{E_sel}
+\end{figure}
+
+As can be seen, a plot of energy during training. \ref{E} on the current mini-batch and \ref{E_sel} on the selection set. The variation is due to the mini-batch being a small subset.
+
+\begin{figure}[h]
+    \includegraphics[width = \textwidth]{imgs/ps2.pdf}
+    \caption{Average cross-entropy across training, after the first four epochs. For the mini-batch and sel, selection set.}
+    \label[fig]{avg}
+\end{figure}
+
+\begin{figure}[h]
+    \includegraphics[width = \textwidth]{imgs/ps3.pdf}
+    \caption{Standard deviation of the cross entropy across training, after the first four epochs. For the mini-batch and sel, selection set.}
+    \label[fig]{std}
+\end{figure}
+
+In the plots of average \ref{avg} and standard deviation \ref{std}, a clear difference with or without the algorithm in the average which was stable. The standard deviation, however, varied greatly depending on the amount of epochs included in the calculation, this is due to randomly generated mini-batches.  
+
+\begin{figure}[h]
+    \includegraphics[width = \textwidth]{imgs/ps4.pdf}
+    \caption{Accuracy on test set.}
+    \label[fig]{acc}
+\end{figure}
+
+In the last plot of the accuracy on the test set \ref{acc} with and without the algorithm, which seems to perform well for small to medium sized NNs.
