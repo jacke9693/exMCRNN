@@ -200,14 +200,15 @@ where $c$ is a small constant $10^{-2}$.
 
 As mentioned above, the algorithm itself gathers from the grand canonical ensemble, GCE, simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. 
 
-\begin{algorithm}
+\begin{algorithm}[h]
     \caption{Monte Carlo regularization}
     \begin{algorithmic}[1]
         \State{Randomly choose to perturb the NN}
         \If{perturb}
-        \State{Calculate $E$ on the selection set}
-        \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set}
-        \State{For each move, choose the best for which $\Delta E$ is maximised}
+        \State{Calculate $E$ on the selection set, $E = \frac{1}{N_S}\sum_n C(f(i^n, \theta);y^n)$ where $N_S$ is the size}
+        \State{Operate with each move on the graph, generate all corresponding graphs}
+        \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set for each graph $\Delta E_D$, $\Delta E_C$, $\Delta E_d$  }
+        \State{For each move, choose the best graph for which corresponding $\Delta E$ is maximised}
         \State{Reject any $\Delta E < 0$}
         \State{Calculate softmax of the resulting $\Delta E$, ergo create probability distribution over these moves}
         \State{Randomly choose one move}
@@ -216,6 +217,8 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
     \State \Return{Old network}
     \end{algorithmic}
 \end{algorithm}
+
+where $f(i^n, \theta)= o^n$ and the superscript $n$ is the sample.
 
 The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability. This is to avoid a last minute perturbation. The purpose of computing the difference energy solely on the selection set was, in part, due to the size of the training set being to large as well as to improve generalization, thus an external set was used. Furthermore a subset of the selection set was used for the evaluation of weight deletion as they number many more than the nodes. The rejection can be softened to allow small decreases in performance, however, a priori there is no motivation for that. The distribution used was softmax, however, a preference for some moves can be established with a more askew distribution, also to better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to better survey the effects of the different moves. 
 
