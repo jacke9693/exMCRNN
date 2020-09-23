@@ -77,7 +77,7 @@ The $'$ is defined to be a slight perturbation of the associated values in the c
 
 The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$ and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state $h_0$ can be included but $h_0$ the initial hidden state is set to the zero vector in this thesis.
 
-The forward propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm:
+The forward propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm \cite{suts}:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
@@ -92,24 +92,24 @@ where $h_0 = 0$. $a_h(*)$ and $a_o(*)$ are nonlinear activation functions for th
 
 \[C(o, y) = \sum_{t=1}^{T}C(o_t; y_t)\]
 
-for some target sequence $y_t$. With the cost function a derivative for the RNNs can be computed by the backpropagation through time algorithm, BPTT \cite{RNN1}:
+for some target sequence $y_t$. With the cost function a derivative for the RNNs can be computed by the backpropagation through time algorithm, BPTT \cite{RNN1}, and format from \cite{suts}:
 
 \begin{algorithmic}[1]
     \For{$t$ from $T$ to $1$}
-    \State{$do_t \gets a_o'(o_t) \partial C(o_t; y_t)/\partial o_t $}
-    \State{$db_o \gets db_o + do_t$}
-    \State{$dW_{oh} \gets dW_{oh} + db_oh_t^\top $}
-    \State{$dh_t \gets dh_t + W_{oh}^\top do_t$}
+    \State{$dz_t \gets a_o'(z_t) d C(o_t; y_t)/d o_t $}
+    \State{$dh_t \gets dh_t + W_{oh}^\top dz_t$}
     \State{$du_t \gets a_h'(u_t)dh_t $}
-    \State{$dW_{hi} \gets dW_{hi} + du_ti_t$}
+    \State{$db_o \gets db_o + dz_t$}
     \State{$db_h \gets db_h + du_t $}
+    \State{$dW_{oh} \gets dW_{oh} + dz_th_t^\top $}
     \State{$dW_{hh} \gets dW_{hh} + du_th_{t-1}^\top $}
+    \State{$dW_{hi} \gets dW_{hi} + du_ti_t^\top$}
     \State{$ dh_{t-1} \gets W_{hh}^\top du_t$}
     \EndFor
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-As mentioned there are difficulties in training RNNs, resorting to second order methods, however, solves some issues. Included in this thesis is the Hessian-Free, HF, optimization, which is a second order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method the two above algorithms are essentially sufficient for calculating the product $Hv$. 
+As mentioned there are difficulties in training RNNs, resorting to second order methods, however, solves some issues. Included in this thesis is the Hessian-Free, HF, optimization \cite{suts}, which is a second order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method the two above algorithms are essentially sufficient for calculating the product $Hv$. 
 
 The relation between the Hessian and R-operator $Hv = R(\nabla f(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, simply a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
@@ -117,26 +117,26 @@ However, as stated in the work \cite{suts}, the approximation called the Gaus-Ne
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
-    \State{$Ru_t \gets R{W_{hi}}i_t + RW_{hh}h_{t-1} + W_{hh}Rh_{t-1} + Rb_h$}
+    \State{$Ru_t \gets W^v_{hi}i_t + W^v_{hh}h_{t-1} + W_{hh}Rh_{t-1} + b^v_h$}
     \State{$Rh_t \gets a_h'(u_t)Ru_t$}
-    \State{$Rz_t \gets RW_{oh}h_t + W_{oh}Rh_t + Rb_o $}
-    \State{$Ro_t \gets a_o'(o_t)Rz_t$}
+    \State{$Rz_t \gets W^v_{oh}h_t + W_{oh}Rh_t + b^v_o $}
+    \State{$Ro_t \gets a_o'(z_t)Rz_t$}
     \EndFor
     \For{$t$ from $T$ to $1$}
-    \State{$Rdo_t \gets a_o'(o_t) RdC(o_t; y_t)/do_t $}
-    \State{$db_o \gets db_o + do_t$}
-    \State{$dW_{oh} \gets dW_{oh} + db_oh_t^\top $}
-    \State{$dh_t \gets dh_t + W_{oh}^\top do_t$}
-    \State{$du_t \gets a_h'(u_t)dh_t $}
-    \State{$dW_{hi} \gets dW_{hi} + du_ti_t$}
-    \State{$db_h \gets db_h + du_t $}
-    \State{$dW_{hh} \gets dW_{hh} + du_th_{t-1}^\top $}
-    \State{$ dh_{t-1} \gets W_{hh}^\top du_t$}
+    \State{$Rdz_t \gets a_o'(z_t) R dC(o_t; y_t)/d o_t $}
+    \State{$Rdh_t \gets Rdh_t + W_{oh}^\top Rdz_t$}
+    \State{$Rdu_t \gets a_h'(u_t)Rdh_t $}
+    \State{$Rdb_o \gets Rdb_o + Rdz_t$}
+    \State{$Rdb_h \gets Rdb_h + Rdu_t $}
+    \State{$RdW_{oh} \gets RdW_{oh} + Rdz_th_t^\top $}
+    \State{$RdW_{hh} \gets RdW_{hh} + Rdu_th_{t-1}^\top $}
+    \State{$RdW_{hi} \gets RdW_{hi} + Rdu_ti_t^\top$}
+    \State{$Rdh_{t-1} \gets W_{hh}^\top Rdu_t$}
     \EndFor
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-The $Gv$ product can be achieved from $Hv$ by simply disregarding derivatives of none differential terms, treating them as constant. Once more this is further discussed in \cite{suts}.
+where the "matching" property modifies $a_o'(z_t) = \mathds{1}$ on line $5$ and \[R\frac{dC(o_t; y_t)}{d o_t} = \frac{d^2C(o_t; y_t)}{d^2o_t} Ro_t =  a_o'(z_t)  Ro_t\] as they are formally computed together. While reading the pseudo-code the $R$ notation can be thought of as defining a new symbol and intermediate quantities are pre-computed. The $Gv$ product can be achieved from $Hv$ by simply disregarding derivatives of none differential terms, treating them as "constant" and formally independent of $\theta$. Once more this is further discussed in \cite{suts}.
 
 For second order methods, including the HF approach, other measures need to be incorporated to guarantee stability and convergence. The main constitutent of HF is CG, the conjugate gradient method. For this a sub-objective based on an approximation of the objective $f(\theta)$ is minimized by CG. The iterative minimization, specifically, given a parameter setting $\theta_n$ for a $\theta_{n+1}$ is found by partially optimizing \[q_{\theta_n} (\theta) \equiv M_{\theta_n}(\theta) + \lambda R_{\theta_n}(\theta),\] where \[M_{\theta_n}(\theta) = f(\theta_n) + f'(\theta_n)^\top \delta_n + \frac{\delta_n^\top C_n \delta_n}{2},\] and $C_n$ is an approximation to the curvature of $f$ at $\theta_n$. $\delta_n = \theta - \theta_n$ is the $n^{th}$ step. The $\lambda R_{\theta_n}(\theta)$ is the regularization term where $\lambda$ is a size parameter and $R_{\theta_n}(\theta)$ is a dampening term, penalizing the size of the $\delta_n$ according to Tikhonov-dampening $R_{\theta_n}(\theta) = \norm{\delta}^2/2$. The quadratic function to be minimized is now set-up and the CG algorithm is run accordingly:
 
@@ -149,7 +149,9 @@ For second order methods, including the HF approach, other measures need to be i
         \State{Compute step size $\alpha = -\frac{d_i (Bz_i + b)}{d_i^\top B d_i}$}
         \State{Update $z_{i+1} = z_i + \alpha d_i$}
         \State{Update $d_{i+1} = -\nabla \phi(z_{i+1}) + \beta_i d_i$ where $\beta_i = \frac{\nabla \phi(z_{i+1}) B d_i}{d_i^\top B d_i}$}
+        \State{$i \gets i+1$}
         \EndWhile
+        \State{ \Return{$z_i = \delta_n$}}
     \end{algorithmic}
 \end{algorithm}
 
@@ -169,6 +171,8 @@ A simplified HF algorithm is stated below:
         \State{find $\delta_{n+1}$ with CG on $z^\top B z/2 + b^\top z $, $z_0 = \delta_{n-1}$}
         \State{adjust $\lambda$ according to Levenburg-Marquardt heuristic}
         \State{adjust $\delta_{n+1}\alpha$, where $\alpha$ is calculated with a back-tracking line search}
+        \State{$\theta_{n+1} = \theta_n + \alpha \delta_n$}
+        \State{$n \gets n+1$}
         \EndFor
     \end{algorithmic}
 \end{algorithm}
@@ -179,15 +183,11 @@ The Levenburg-Marquardt, LM, heuristic is simply as follows:
 
 and based on $\rho$ adjust $\lambda$ according to
 
-\begin{algorithmic}[1]
-    \If{$\rho > 3/4 $}
-    \State{$\lambda\gets 2/3 \lambda$}
-    \EndIf
-    \If{$\rho<1/4$}
-    \State{$\lambda \gets 3/2\lambda$}
-    \EndIf
-\end{algorithmic}
-
+\begin{enumerate}
+    \item \textbf{if} $\rho > 3/4 $ \textbf{then} $\lambda\gets 2/3 \lambda$
+    \item \textbf{if} $\rho<1/4$ \textbf{then} $\lambda \gets 3/2\lambda$
+\end{enumerate}   
+    
 the size will be adjusted depending on the accuracy of reduction in the approximation $q_{\theta_n}$ in relation to the objective. 
 
 The last line of defense is the standard line searching. Provided that $\delta_n$ is a descent direction $(\delta_n^\top \nabla f(\theta_n) < 0)$ follows that for a small, non-zero value $\alpha$ we will have \[f(\theta_n + \alpha \delta_n) = f(\theta_{n+1}) < f(\theta_n),\] $\delta_n$ will be a descent direction as long as $B$ is positive definite, $\nabla f(\theta_n)$ is computed on the mini-batch and $M$ is optimized partially with CG\cite{Martens2012}. This guarantees that there will be a decrease of $f$ on the mini-batch. The back-tracking can simply be implemented with the below condition, starting with $\alpha = 1$ and repeatedly multiply with $\beta = 1/2$ until:
