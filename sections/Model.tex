@@ -206,8 +206,8 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
         \State{Randomly choose to perturb the NN}
         \If{perturb}
         \State{Calculate $E$ on the selection set, $E = \frac{1}{N_S}\sum_n C(f(i^n, \theta);y^n)$ where $N_S$ is the size}
-        \State{Operate with each move on the graph, generate all corresponding graphs}
-        \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set for each graph $\Delta E_D$, $\Delta E_C$, $\Delta E_d$  }
+        \State{Operate with each move on the graph, generate all corresponding graphs $i$ and $ij$ for each $C_i$, $D_i$, $D_{ij}$ where $i$ is a node in the hidden layer and $j$ is any node}
+        \State{Calculate $\Delta E$ for each allowed move, $E_D$, $E_C$ and $E_d$ on the selection set for each graph $\Delta E_{D_i}$, $\Delta E_{C_i}$, $\Delta E_{d_{ij}}$  }
         \State{For each move, choose the best graph for which corresponding $\Delta E$ is maximised}
         \State{Reject any $\Delta E < 0$}
         \State{Calculate softmax of the resulting $\Delta E$, ergo create probability distribution over these moves}
