@@ -6,25 +6,25 @@ This section describes firstly the underlying theory of computational graphs, se
 
 Before introducing artificial neural networks as such, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Firstly is the efficient computation of derivatives of any function $F(\theta)$ that can be evaluated with such a graph. 
 
-Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of ancestors $A_i$, determining its input, and a differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph:
+Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisting of the input nodes and $N$ is the output node. Each node $i$ has a set of parents $A_i$, determining its input, and a differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph \cite{suts}:
 
 \begin{algorithmic}[1]
     \State{Let $\theta$ be distributed between the input nodes $z_i, i \in I$}
-    \For{$i=1$ to $N$ if $i\notin I$}
+    \For{$i=1$ to $N$ \textbf{if} $i\notin I$}
     \State{$x_i \gets \text{concat}_{j\in A_i}z_j$}
     \State{$z_i \gets f_i(x_i)$}
     \EndFor
     \State{\Return{$F(\theta) = z_N$}}
 \end{algorithmic}
 
-where every node $z_i$ can be vector valued.
+where every node $z_i$ can be vector valued. This relates straightforwardly to neural networks.
 
-Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality of $z_N$:
+Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality of $z_N$ \cite{suts}:
 
 \begin{algorithmic}[1]
     \State{$dz_N \gets v$}
     \State{$dz_i \gets 0$ for $i<N$}
-    \For{$i = N$ to $1$ if $i \notin I$}
+    \For{$i = N$ \textbf{to} $1$ \textbf{if} $i \notin I$}
     \State{$dx_i \gets f_i'(x_i)^\top dz_i$}
     \For{$j \in A_i $}
     \State{$dz_j \gets dz_j + \text{unconcat}^jdx_i$}
@@ -36,7 +36,7 @@ Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cos
 
 $\text{unconcat}$ being the inverse of $\text{concat}$ such that: if $x_i = \text{concat}_{j\in A_i} z_j$ then $\text{unconcat}^j x_i = z_j$. 
 
-This formalism allows for easy and automated application of the R-operator. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
+This formalism allows for easy and automated application of the R-operator \cite{pepe}. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
 
 \[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
 
@@ -50,12 +50,12 @@ As a derivative, the $R_v$ operator obeys the following rules of differentiation
 
 where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $Rb = b^v$ establishes the parameter $b$ with respect to $v$.
 
-Given the above, computation of $R(F(\theta))$ is described in the following algorithm:
+Given the above, computation of $R(F(\theta))$ is described in the following algorithm \cite{suts}:
 
 \begin{algorithmic}[1]
     \State{distribute input $v$ across input nodes $Rz_i$ for $i \in I$}
-    \For{$i = 1$ to $N$ if $i \notin I$ do}
-    \State{$Rx_i \gets \text{concat} Rz_j$}
+    \For{$i = 1$ \textbf{to} $N$ \textbf{if} $i \notin I$ do}
+    \State{$Rx_i \gets \text{concat}_{j\in A_i} Rz_j$}
     \State{$Rz_i \gets f_i'(x_i) R x_i$}
     \EndFor
     \State{\Return{$Rz_N = F'(\theta) v $}}
@@ -63,12 +63,15 @@ Given the above, computation of $R(F(\theta))$ is described in the following alg
 
 The algorithms for differentiation can be proven with structural induction over the graphs and is omitted. The needs for this in the Hessian-Free approach becomes clear with the relation $Hv = R(\nabla f(\theta))$, where $H$ is the Hessian of $f$. 
 
-From two graphs $G_1 = (V_1,E_1)$ and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, deletion of either node $i$ or weight $i,j$ and the copying of node $i$, required for the moves or changes to the graph, relate to the binary operators in the following way:
+From two graphs $G_1 = (V_1,E_1)$ and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, $D_i$ deletion of either node $v_i \in V_1$ or $D_{ij}$ deletion of weight $e_{ij} \in E_1$ and the copying $C_i$ of node $v_i \in V_1$, required for the moves or changes to the graph, relate to the binary operators of graphs in the following way:
 
 \begin{enumerate}
-    \item Copying $C_i$: $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup V_2)$ where $V_1 = V_2 / V_i$ 
-    \item Deletion $D_i $: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap V_2)$ where $V_2 = V_1 / V_i$ or $E_2 = E_1 / E_i$
+    \item Copying $C_i$, if $v_i \in V_1$: $G_1 \cup G_2 / G_1 \cap G_2$ where $V_2 = \{v'_i\} \cup V_1$ and $E_2 = \{e'_{ij}, e'_{ji}\}$ $\forall j$ $\mid v_j \in V_1$
+    \item Deletion $D_i $, if $v_i \in V_1$: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap E_2)$ where $V_2 = V_1 / v_i$ and $E_2 = E_1 / \{e_{ij}, e_{ji}\} $ $ \forall j \mid v_j \in V_1 $
+    \item Deletion $D_{ij}$, if $e_{ij} \in E_1$: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap E_2)$ where $V_1 = V_2$ and $E_2 = E_1 / e_{ij}$
 \end{enumerate}
+
+The $'$ is defined to be a slight perturbation of the associated values in the computational graph such that $v'_i \notin V_1 \cap V_2$. And the union to be $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup E_2)$.
 
 \section{Recurrent Neural Network}
 

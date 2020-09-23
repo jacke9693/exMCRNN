@@ -2,6 +2,8 @@
 
 The results gathered are from a randomly initialized RNN on the data set MNIST. The MNIST data set consists of $28 \times 28$ pixel handwritten digit images. The task is to classify the images into $10$ digit classes. For the RNN the image is sequentially feeded into the RNN, here $28$ pixels at a time. 
 
+This decides the architecture of the RNN. The input layer then consists of $28$ nodes, the output $10$. The hidden layer is variable and initial sizes are set.
+
 The MNIST data set is divided into mini-batches, a mini-batch consists of $1000$ samples, as the HF relies on bigger mini-batches. An epoch is a complete progression of mini-batches through the entire data set, of which there are in total $60 000$. Of the total set, however, a selection set of $10 000$ samples was used, which makes the training set $50000$. A total of $11$ epochs was performed on one training run. Finally a separate test set of $10000$ samples benchmarked the RNN. The initialization is omitted from the results which consists of the first epoch, $50$ mini-batches.
 
 The activation for the hidden layer $a_h(x) = 1/(1 + e^{-x})$ is the sigmoid. The output or output activation \[a_o(z_j) = \frac{e^{z_j}}{\sum_{k=1}^N e^{z_k}}\] is the softmax function. Accordingly the "matching" cost or energy function is the cross-entropy function \[C(z,x) = - \sum_i [x_i] \log [\hat{x}]_i\] where $\hat{x} = a_o(z)$ is the models prediction and $x$ is the target. Using one-hot encoding the target $x$ is a vector of zeroes except at one location. The "matching" property leads to \[\nabla_z C(z,x) = \hat{x} - x \text{ and } H_{C(z,x)} = \text{diag}(\hat{x}) - \hat{x} \hat{x}^\top\] which is left as an exercise but what can be seen is a benign Hessian independent of the target. 
@@ -10,7 +12,7 @@ For the changes in the RNN, a relaxation function $e(5/(2n)) - 1$ where $n$ is t
 
 \section{Sizes and Plots}
 
-Different initial sizes were studied, comparing with and without the regularization for each size. The sizes were $27, 37, 47, 57, 67$, from which the training started, however, the RNNs sizes with regularization changed throughout the training. The way in which this happened is ignored as the moves are incomparable, removing a weight vs a node is an altogether different change and all the moves are treated without bias in the algorithm. 
+Different initial sizes of the hidden layer were studied, comparing with and without the regularization for each size. The sizes were $L_h = 27, 37, 47, 57, 67$, from which the training started, however, the RNNs sizes with regularization changed throughout the training. The way in which this happened is ignored as the moves are incomparable, removing a weight vs a node is an altogether different change and all the moves are treated without bias in the algorithm. 
 
 In the below plots, w in the legends stands for with the algorithm. 
 
@@ -44,22 +46,25 @@ In the plots of average \ref{avg} and standard deviation \ref{std}, a clear diff
 
 \begin{figure}[h]
     \includegraphics[width = \textwidth]{imgs/ps4.pdf}
-    \caption{Accuracy on test set.}
+    \caption{Error on test set.}
     \label[fig]{acc}
 \end{figure}
 
-In the last plot of the accuracy on the test set \ref{acc} with and without the algorithm, which seems to perform well for small to medium sized NNs.
+In the last plot of the error on the test set \ref{acc} with and without the algorithm, which seems to perform well for small to medium sized NNs.
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{lllll}
-    \multicolumn{1}{|l}{} 27 & 37 & 47 & 57 & 67 \\
+    \begin{tabular}{|l|l|l|l|l|l|}
     \hline
-    \multicolumn{1}{|l}{} 6.82 & 11.98 & 7.66 & 5.54 & 3.74 \\
-    \multicolumn{1}{|l}{} 5.73 & 5.53 & 5.75 & 6.46 & 4.99 \\
+       Hidden Layer Size & 27 & 37 & 47 & 57 & 67 \\
+    \hline
+       - & 6.82 & 11.98 & 7.66 & 5.54 & 3.74 \\
+    \hline
+       w & 5.73 & 5.53 & 5.75 & 6.46 & 4.99 \\
+    \hline
     \end{tabular}
-    \caption{Accuracy in \%}
+    \caption{Error in \%}
     \label[table]{acc_t}
 \end{table}
 
-In the table \ref{acc_t} the accuracy can be seen in plain text.
+In the table \ref{acc_t} the error can be seen in plain text, w for with the regularization.
