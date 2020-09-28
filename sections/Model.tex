@@ -1,6 +1,6 @@
 \chapter{Model Description}
 
-This section describes firstly the underlying theory of computational graphs, secondly the RNN structure and lastly the regularization. A lot of this section is based on the work of \textcite{suts} and \textcite{Martens2012}.
+This section firstly describes the underlying theory of computational graphs, secondly the RNN structure, and lastly, the regularization. A lot of this section is based on the work of \textcite{suts} and \textcite{Martens2012}.
 
 \section{Differentiable Computational Graph}
 
@@ -17,7 +17,7 @@ Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisti
     \State{\Return{$F(\theta) = z_N$}}
 \end{algorithmic}
 
-where every node $z_i$ can be vector valued. This relates straightforwardly to neural networks.
+where every node $z_i$ can be vector-valued, the formalism relates straightforwardly to neural networks.
 
 Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality of $z_N$ \cite{suts}:
 
@@ -36,7 +36,7 @@ Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cos
 
 $\text{unconcat}$ being the inverse of $\text{concat}$ such that: if $x_i = \text{concat}_{j\in A_i} z_j$ then $\text{unconcat}^j x_i = z_j$. 
 
-This formalism allows for easy and automated application of the R-operator \cite{pepe}. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
+This formalism allows for the easy and automated application of the R-operator \cite{pepe}. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
 
 \[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
 
@@ -48,7 +48,7 @@ As a derivative, the $R_v$ operator obeys the following rules of differentiation
     \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
 \end{enumerate}
 
-where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized these are linearity, the product rule and chain rule respectively. The $v$ will be henceforth suppressed and implied for compact notation, additionally the relation $Rb = b^v$ establishes the parameter $b$ with respect to $v$.
+where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized, these are linearity, the product rule, and chain rule, respectively. The $v$ will be henceforth suppressed and implied for compact notation; additionally, the relation $Rb = b^v$ establishes the parameter $b$ with respect to $v$.
 
 Given the above, computation of $R(F(\theta))$ is described in the following algorithm \cite{suts}:
 
@@ -61,7 +61,7 @@ Given the above, computation of $R(F(\theta))$ is described in the following alg
     \State{\Return{$Rz_N = F'(\theta) v $}}
 \end{algorithmic}
 
-The algorithms for differentiation can be proven with structural induction over the graphs and is omitted. The needs for this in the Hessian-Free approach becomes clear with the relation $Hv = R(\nabla f(\theta))$, where $H$ is the Hessian of $f$. 
+The algorithms for differentiation can be proven with structural induction over the graphs and are omitted. The needs for this in the Hessian-Free approach becomes clear with the relation $Hv = R(\nabla f(\theta))$, where $H$ is the Hessian of $f$. 
 
 From two graphs $G_1 = (V_1,E_1)$ and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, $D_i$ deletion of either node $v_i \in V_1$ or $D_{ij}$ deletion of weight $e_{ij} \in E_1$ and the copying $C_i$ of node $v_i \in V_1$, required for the moves or changes to the graph, relate to the binary operators of graphs in the following way:
 
@@ -75,7 +75,7 @@ The $'$ is defined to be a slight perturbation of the associated values in the c
 
 \section{Recurrent Neural Network}
 
-The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$ and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally an initial hidden state $h_0$ can be included but $h_0$ the initial hidden state is set to the zero vector in this thesis.
+The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$, and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally, an initial hidden state $h_0$ can be included, but $h_0$ the initial hidden state is set to the zero vector in this thesis.
 
 The forward propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm \cite{suts}:
 
@@ -109,9 +109,9 @@ for some target sequence $y_t$. With the cost function a derivative for the RNNs
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
 
-As mentioned there are difficulties in training RNNs, resorting to second order methods, however, solves some issues. Included in this thesis is the Hessian-Free, HF, optimization \cite{suts}, which is a second order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method the two above algorithms are essentially sufficient for calculating the product $Hv$. 
+As mentioned, there are difficulties in training RNNs; however, resorting to second-order methods solves some issues. This thesis includes the implementation of the Hessian-Free, HF, optimization \cite{suts}, which is a second-order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method, the two above algorithms are practically sufficient for calculating the product $Hv$. 
 
-The relation between the Hessian and R-operator $Hv = R(\nabla f(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, simply a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
+The relation between the Hessian and R-operator $Hv = R(\nabla f(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, only a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
 However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. There is another reason for using $G$ instead which relates to the "matching" of the cost function with the output function, this makes the $G$ matrix independent of the target $y$ and positive semi definite \cite{Martens2012}. Described in the algorithm below is the product \(Gv\) for some vector $v$, with "matching" cost and output function:
 
@@ -220,6 +220,6 @@ As mentioned above, the algorithm itself gathers from the grand canonical ensemb
 
 where $f(i^n, \theta)= o^n$ and the superscript $n$ is the sample.
 
-The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch the lesser the probability. This is to avoid a last minute perturbation. The purpose of computing the difference energy solely on the selection set was, in part, due to the size of the training set being to large as well as to improve generalization, thus an external set was used. Furthermore a subset of the selection set was used for the evaluation of weight deletion as they number many more than the nodes. The rejection can be softened to allow small decreases in performance, however, a priori there is no motivation for that. The distribution used was softmax, however, a preference for some moves can be established with a more askew distribution, also to better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to better survey the effects of the different moves. 
+The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch, the lesser the probability. The relaxation is to avoid a last-minute perturbation. The purpose of computing the difference energy solely on the selection set was, in part, due to the size of the training set being too large and improving generalization; thus, an external set was used. Furthermore, a subset of the selection set was used to evaluate weight deletion as they number many more than the nodes. The rejection can be softened to allow small decreases in performance; however, there is no a priori motivation. The distribution used was softmax; however, a preference for some moves can be established with a more askew distribution, and better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to survey the effects of the different moves better.  
 
-The relation to the GCE simulation is the insertion and deletion of nodes. Disregarding the size or the amount of nodes of the network, as no favor in size was selected. A possibility is the preference of small networks, however, accurately balancing this in terms of probabilities is for another thesis. Similarly as with configurational bias, a randomly generated node seems unlikely to produce an improvement and therefore it is sampled from an existing node. The parameters related to the new node is then slightly, randomly, changed. 
+The relation to the GCE simulation is the insertion and deletion of nodes. Disregarding the size or the number of nodes of the network, as no favor in size was selected. A possibility is the preference of small networks; however, accurately balancing this in terms of probabilities is for another thesis. Similarly, as with configurational bias, a randomly generated node seems unlikely to produce an improvement, and therefore it is sampled from an existing node. The parameters related to the new node is then slightly, randomly, changed. 
