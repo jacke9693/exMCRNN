@@ -1,14 +1,14 @@
 \chapter{Conclusions}
 
-As the purpose of this thesis was the proof of concept of this regularization, MCR, this has been achieved and data points to it being effective. Further study is required to establish a scaling in activity for larger NNs.
+As this thesis's purpose was the proof-of-concept of this regularization, MCR, the effects have been established, and the purpose is achieved. Data points to the regularization being useful. Further study is required to establish a scaling in activity for larger NNs.
 
-The algorithm hints at a method of initializing a network, by continously perturbing the network pre-training until some threshold value is met. 
+The algorithm hints at a method of initializing a network by continuously perturbing the network pre-training until some threshold value is met. 
 
-As mentioned, a way to combat the standard deviation instability is regularizing the update produced in CG by perturbing and benchmarking it in a similar way to MCR on a selection set. This relates to a micro-canonical simulation in which changes in energy are considered by a demon. 
+As mentioned, a way to combat the standard deviation instability is regularizing the update produced in CG by perturbing and benchmarking it in a similar way to MCR on a selection set. The analogy is to a micro-canonical simulation in which a demon considers changes in energy. 
 
-Lastly, regulating the size of the mini-batch could be done in a similar fashion, if the selection set performance goes down to increase the mini-batch and vice versa. Somewhat like simulating different temperatures. But this relates to further study and is simply concepts derived from this succesfull regularization technique.
+Lastly, regulating the mini-batch size could be done similarly, if the selection set performance goes down to increase the mini-batch and vice versa, somewhat like simulating different temperatures. Nevertheless, this relates to further study and merely is concepts derived from this successful regularization technique.
 
-The study of the hidden state size was omitted, however, a very rudimentary comment is that increasing the hidden layer size directly does so.
+The study of the hidden state size was omitted; however, a very rudimentary comment is that increasing the hidden layer size directly increases the hidden state's size.
 
-The regularization dragged out the training of the NN, however, comparatively of the HF approach was but a fraction of the whole time. Utilizing stochastic gradient descent could, however, reduce the relative times and optimizing the regularization could then be of importance. Speeding up the process thereby not relying on a supercomputer is an advice for future study. Also relying on existing libraries and open-source platforms for machine learning is a protip, not to reinvent the wheel but rather depend on the flexibility of giants.
+The regularization dragged out the NN training; however, comparatively of the HF approach was but a fraction of the whole time. However, utilizing stochastic gradient descent could reduce the relative times, and optimizing the regularization could then be of importance. Speeding up the process, thereby not relying on a supercomputer, is a piece of advice for future study. Also, relying on existing libraries and open-source platforms for machine learning is a protip, not to reinvent the wheel but rather depend on the flexibility of giants.
 
