@@ -10,7 +10,7 @@ The activation for the hidden layer $a_h(x) = 1/(1 + e^{-x})$ is the sigmoid. Th
 
 For the changes in the RNN, a relaxation function $e(5/(2n)) - 1$ where $n$ is the current epoch, was used to regulate changes and make them less probable as the training progresses. To this a uniform random number $r$ is drawn and if smaller $ r < e(5/(2n)) - 1$ the perturbation will proceed.
 
-\section{Sizes and Plots}
+\section{Setups and Plots}
 
 Different initial sizes of the hidden layer were studied, comparing with and without the regularization for each size. The sizes were $L_h = 27, 37, 47, 57, 67$, from which the training started. However, the RNNs sizes with regularization changed throughout the training. How this happened is ignored as the moves are incomparable; removing a weight vs. a node is an altogether different change, and all the moves are treated without bias in the algorithm. 
 
