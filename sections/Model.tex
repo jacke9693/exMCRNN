@@ -17,7 +17,8 @@ Considering a graph over $N$ nodes, $1, ..., N$ where $I$ is the subset consisti
     \State{\Return{$F(\theta) = z_N$}}
 \end{algorithmic}
 
-where every node $z_i$ can be vector-valued, the formalism relates straightforwardly to neural networks.
+\noindent
+where every node $z_i$ can be vector-valued, the formalism relates straightforwardly to forward propagation of neural networks.
 
 Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the models prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\top C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\top v$ for arbitrary vector $v$ with according dimensionality of $z_N$ \cite{suts}:
 
@@ -33,13 +34,13 @@ Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cos
     \State{concatenate $dz_i$ for $i \in I$ onto $d\theta$}
     \State{\Return{$d\theta = F'(\theta)^\top v$ }}
 \end{algorithmic}
-
+\noindent
 $\text{unconcat}$ being the inverse of $\text{concat}$ such that: if $x_i = \text{concat}_{j\in A_i} z_j$ then $\text{unconcat}^j x_i = z_j$. 
 
 This formalism allows for the easy and automated application of the R-operator \cite{pepe}. The $R_v$ operator is defined as follows for $R_vx $ denoting the directional derivative of a $\theta$-dependent variable $x$ in the direction $v$:
 
 \[R_vx = \lim_{\epsilon\to 0} \frac{x(\theta + \epsilon v) - x(\theta)}{\epsilon} = \frac{\partial x}{\partial\theta}v\]
-
+\noindent
 As a derivative, the $R_v$ operator obeys the following rules of differentiation:
 
 \begin{enumerate}
@@ -47,14 +48,14 @@ As a derivative, the $R_v$ operator obeys the following rules of differentiation
     \item $ R_v(xy) = (R_vx)y + (R_vy)x $
     \item $R_v(\gamma(x)) = (R_vx) J_{\gamma}(x)$
 \end{enumerate}
-
+\noindent
 where $J_\gamma(x)$ denotes the Jacobian of $\gamma$. As can be recognized, these are linearity, the product rule, and chain rule, respectively. The $v$ will be henceforth suppressed and implied for compact notation; additionally, the relation $Rb = b^v$ establishes the parameter $b$ with respect to $v$.
 
 Given the above, computation of $R(F(\theta))$ is described in the following algorithm \cite{suts}:
 
 \begin{algorithmic}[1]
     \State{distribute input $v$ across input nodes $Rz_i$ for $i \in I$}
-    \For{$i = 1$ \textbf{to} $N$ \textbf{if} $i \notin I$ do}
+    \For{$i = 1$ \textbf{to} $N$ \textbf{if} $i \notin I$}
     \State{$Rx_i \gets \text{concat}_{j\in A_i} Rz_j$}
     \State{$Rz_i \gets f_i'(x_i) R x_i$}
     \EndFor
@@ -63,19 +64,19 @@ Given the above, computation of $R(F(\theta))$ is described in the following alg
 
 The algorithms for differentiation can be proven with structural induction over the graphs and are omitted. The needs for this in the Hessian-Free approach becomes clear with the relation $Hv = R(\nabla f(\theta))$, where $H$ is the Hessian of $f$. 
 
-From two graphs $G_1 = (V_1,E_1)$ and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, $D_i$ deletion of either node $v_i \in V_1$ or $D_{ij}$ deletion of weight $e_{ij} \in E_1$ and the copying $C_i$ of node $v_i \in V_1$, required for the moves or changes to the graph, relate to the binary operators of graphs in the following way:
+From two graphs $G_1 = (V_1,E_1)$, where $V_1$ are a set of vertices and $E_1$ a set of edges, and $G_2 = (V_2, E_2)$ a new graph can be generated. The operators, $D_i$ deletion of either node $v_i \in V_1$ or $D_{ij}$ deletion of weight $e_{ij} \in E_1$ and the copying $C_i$ of node $v_i \in V_1$, required for the updates of the graph, relate to the binary operators of graphs in the following way:
 
 \begin{enumerate}
     \item Copying $C_i$, if $v_i \in V_1$: $G_1 \cup G_2 / G_1 \cap G_2$ where $V_2 = \{v'_i\} \cup V_1$ and $E_2 = \{e'_{ij}, e'_{ji}\}$ $\forall j$ $\mid v_j \in V_1$
     \item Deletion $D_i $, if $v_i \in V_1$: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap E_2)$ where $V_2 = V_1 / v_i$ and $E_2 = E_1 / \{e_{ij}, e_{ji}\} $ $ \forall j \mid v_j \in V_1 $
     \item Deletion $D_{ij}$, if $e_{ij} \in E_1$: $G_1 \cap G_2 = (V_1 \cap V_2, E_1 \cap E_2)$ where $V_1 = V_2$ and $E_2 = E_1 / e_{ij}$
 \end{enumerate}
-
-The $'$ is defined to be a slight perturbation of the associated values in the computational graph such that $v'_i \notin V_1 \cap V_2$. And the union to be $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup E_2)$.
+\noindent
+The $'$ is defined to be a slight perturbation of the associated values in the computational graph such that $v'_i \notin V_1 \cap V_2$. And the union is defined to be $G_1 \cup G_2 = (V_1 \cup V_2, E_1 \cup E_2)$.
 
 \section{Recurrent Neural Network}
 
-The recurrent neural network, RNN, is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$, and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally, an initial hidden state $h_0$ can be included, but $h_0$ the initial hidden state is set to the zero vector in this thesis.
+The RNN is a nonlinear dynamical system mapping sequences to sequences. RNNs are typically structured with one input $i$, one hidden $h$, and one output layer $o$. Being parametrized by three weight matrices and two bias vectors \([W_{hi}, W_{hh}, W_{oh}, b_h, b_o]\) the state concatenation denoted \(\theta\) completely describes the RNN. Additionally, an initial hidden state $h_0$ can be included, but $h_0$ the initial hidden state is set to the zero vector in this thesis.
 
 The forward propagation through the network of an input sequence \((i_1, i_2, ... , i_T)\) to an output sequence \((o_1, o_2, ..., o_T) \) is performed in the following algorithm \cite{suts}:
 
@@ -87,12 +88,12 @@ The forward propagation through the network of an input sequence \((i_1, i_2, ..
     \State{$o_t \gets a_o(z_t)$}
     \EndFor
 \end{algorithmic}
-
+\noindent
 where $h_0 = 0$. $a_h(*)$ and $a_o(*)$ are nonlinear activation functions for the hidden and output layer respectively. The cost function is usually defined as a sum of per-timestep cost:
 
 \[C(o, y) = \sum_{t=1}^{T}C(o_t; y_t)\]
-
-for some target sequence $y_t$. With the cost function a derivative for the RNNs can be computed by the backpropagation through time algorithm, BPTT \cite{RNN1}, and format from \cite{suts}:
+\noindent
+for some target sequence $y_t$. With the cost function a derivative for the RNNs can be computed by the BPTT \cite{RNN1}, and format from \cite{suts}:
 
 \begin{algorithmic}[1]
     \For{$t$ from $T$ to $1$}
@@ -108,12 +109,14 @@ for some target sequence $y_t$. With the cost function a derivative for the RNNs
     \EndFor
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
+\noindent
+the name relates to the rewinding of the forward propagation. With the evaluated input, the error is pushed back through the NN. As can be seen backpropagation through time starts from $t=T$ down to one.
 
-As mentioned, there are difficulties in training RNNs; however, resorting to second-order methods solves some issues. This thesis includes the implementation of the Hessian-Free, HF, optimization \cite{suts}, which is a second-order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method, the two above algorithms are practically sufficient for calculating the product $Hv$. 
+As mentioned, there are difficulties in training RNNs; however, resorting to second-order methods solves some issues. This thesis includes the implementation of the HF optimization \cite{suts}, which is a second-order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method, the two above algorithms are practically sufficient for calculating the product $Hv$. 
 
 The relation between the Hessian and R-operator $Hv = R(\nabla f(\theta))$ determines the algorithm for calculating the product in terms of the above algorithms, only a forward pass followed by a backward pass. A rigorous treatment can be found in \cite{suts}.
 
-However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. There is another reason for using $G$ instead which relates to the "matching" of the cost function with the output function, this makes the $G$ matrix independent of the target $y$ and positive semi definite \cite{Martens2012}. Described in the algorithm below is the product \(Gv\) for some vector $v$, with "matching" cost and output function:
+However, as stated in the work \cite{suts}, the approximation called the Gaus-Newton matrix, \(G\), of the Hessian is preferred for stability. There is another reason for using $G$ instead which relates to the "matching" of the cost function with the output function, this makes the $G$ matrix independent of the target $y$ and positive semi-definite \cite{Martens2012}. Described in the algorithm below is the product \(Gv\) for some vector $v$, with "matching" cost and output function:
 
 \begin{algorithmic}[1]
     \For{$t$ from $1$ to $T$}
@@ -135,10 +138,10 @@ However, as stated in the work \cite{suts}, the approximation called the Gaus-Ne
     \EndFor
     \State \Return{$d\theta = [dW_{hi}, dW_{hh}, dW_{oh}, db_h, db_o]$}
 \end{algorithmic}
-
+\noindent
 where the "matching" property modifies $a_o'(z_t) = \mathds{1}$ on line $5$ and \[R\frac{dC(o_t; y_t)}{d o_t} = \frac{d^2C(o_t; y_t)}{d^2o_t} Ro_t =  a_o'(z_t)  Ro_t\] as they are formally computed together. While reading the pseudo-code the $R$ notation can be thought of as defining a new symbol and intermediate quantities are pre-computed. The $Gv$ product can be achieved from $Hv$ by simply disregarding derivatives of none differential terms, treating them as "constant" and formally independent of $\theta$. Once more this is further discussed in \cite{suts}.
 
-For second order methods, including the HF approach, other measures need to be incorporated to guarantee stability and convergence. The main constitutent of HF is CG, the conjugate gradient method. For this a sub-objective based on an approximation of the objective $f(\theta)$ is minimized by CG. The iterative minimization, specifically, given a parameter setting $\theta_n$ for a $\theta_{n+1}$ is found by partially optimizing \[q_{\theta_n} (\theta) \equiv M_{\theta_n}(\theta) + \lambda R_{\theta_n}(\theta),\] where \[M_{\theta_n}(\theta) = f(\theta_n) + f'(\theta_n)^\top \delta_n + \frac{\delta_n^\top C_n \delta_n}{2},\] and $C_n$ is an approximation to the curvature of $f$ at $\theta_n$. $\delta_n = \theta - \theta_n$ is the $n^{th}$ step. The $\lambda R_{\theta_n}(\theta)$ is the regularization term where $\lambda$ is a size parameter and $R_{\theta_n}(\theta)$ is a dampening term, penalizing the size of the $\delta_n$ according to Tikhonov-dampening $R_{\theta_n}(\theta) = \norm{\delta}^2/2$. The quadratic function to be minimized is now set-up and the CG algorithm is run accordingly:
+For second order methods, including the HF approach, other measures need to be incorporated to guarantee stability and convergence. The main constitutent of HF is the conjugate gradient method (CG). For this a sub-objective based on an approximation of the objective $f(\theta)$ is minimized by CG. The iterative minimization, specifically, given a parameter setting $\theta_n$ for an updated $\theta_{n+1}$ is found by partially optimizing \[q_{\theta_n} (\theta) \equiv M_{\theta_n}(\theta) + \lambda R_{\theta_n}(\theta),\] where \[M_{\theta_n}(\theta) = f(\theta_n) + f'(\theta_n)^\top \delta_n + \frac{\delta_n^\top C_n \delta_n}{2},\] and $C_n$ is an approximation to the curvature of $f$ at $\theta_n$. $\delta_n = \theta - \theta_n$ is the $n^{th}$ step. The $\lambda R_{\theta_n}(\theta)$ is the regularization term where $\lambda$ is a size parameter and $R_{\theta_n}(\theta)$ is a dampening term, penalizing the size of the $\delta_n$ according to Tikhonov-dampening $R_{\theta_n}(\theta) = \norm{\delta}^2/2$. The quadratic function to be minimized is now set-up and the CG algorithm is run accordingly:
 
 \begin{algorithm}
     \caption{CG - Conjugate Gradient, truncated}
@@ -155,9 +158,7 @@ For second order methods, including the HF approach, other measures need to be i
     \end{algorithmic}
 \end{algorithm}
 
-As can be seen, only the product $Bz$ or $Bd$ is ever needed, thus free of the Hessian. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $f(\theta_n + \delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < c.\]  Choosing $c = 0.0001$ and $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$.
-
-A simplified HF algorithm is stated below:
+As can be seen, only the product $Bz$ or $Bd$ is ever needed, thus free of the Hessian. Several different truncation criteria exist, one used in this thesis is a limit in total steps as the accuracy of $M(\delta)$ as a model of $f(\theta_n + \delta)$ will go down even though $M(\delta)$ may be improving still. Another preventive measure implemented is the relative progress which stops CG when \[s_j = \frac{M(z_j) - M(z_{j-k})}{M(z_j) - M(0)} < c.\]  Choosing $c = 10^{-4}$ and $k= \max (10, j/10)$, recommended in \cite{suts}. Also discussed in \textcite{Martens2012} is the effect of truncation as dampening and possible positive effects on $f$. Utilized in the CG above is the initialization described in \cite{Martens2012} as the previous step $z_0 = \delta_{n-1}$ and not $z_0 = 0$. A simplified HF algorithm is stated below, where heuristic parameters are preset:
 
 \begin{algorithm}
     \caption{HF - simplified}
@@ -177,7 +178,7 @@ A simplified HF algorithm is stated below:
     \end{algorithmic}
 \end{algorithm}
 
-The Levenburg-Marquardt, LM, heuristic is simply as follows:
+The Levenburg-Marquardt (LM) heuristic is simply as follows:
 
 \[ \rho = \frac{f(\theta_n + \delta_n) - f(\theta_n)}{q_{\theta_n} (\delta_n)}\]
 
@@ -187,10 +188,10 @@ and based on $\rho$ adjust $\lambda$ according to
     \item \textbf{if} $\rho > 3/4 $ \textbf{then} $\lambda\gets 2/3 \lambda$
     \item \textbf{if} $\rho<1/4$ \textbf{then} $\lambda \gets 3/2\lambda$
 \end{enumerate}   
-    
+\noindent
 the size will be adjusted depending on the accuracy of reduction in the approximation $q_{\theta_n}$ in relation to the objective. 
 
-The last line of defense is the standard line searching. Provided that $\delta_n$ is a descent direction $(\delta_n^\top \nabla f(\theta_n) < 0)$ follows that for a small, non-zero value $\alpha$ we will have \[f(\theta_n + \alpha \delta_n) = f(\theta_{n+1}) < f(\theta_n),\] $\delta_n$ will be a descent direction as long as $B$ is positive definite, $\nabla f(\theta_n)$ is computed on the mini-batch and $M$ is optimized partially with CG\cite{Martens2012}. This guarantees that there will be a decrease of $f$ on the mini-batch. The back-tracking can simply be implemented with the below condition, starting with $\alpha = 1$ and repeatedly multiply with $\beta = 1/2$ until:
+The last line of defense is the standard line search. Provided that $\delta_n$ is a descent direction $(\delta_n^\top \nabla f(\theta_n) < 0)$ it follows that for a small, non-zero value $\alpha$ we will have \[f(\theta_n + \alpha \delta_n) = f(\theta_{n+1}) < f(\theta_n),\] $\delta_n$ will be a descent direction as long as $B$ is positive definite, $\nabla f(\theta_n)$ is computed on the mini-batch and $M$ is optimized partially with CG\cite{Martens2012}. This guarantees that there will be a decrease of $f$ on the mini-batch. The back-tracking can simply be implemented with the below condition, starting with $\alpha = 1$ and repeatedly multiply with $\beta = 1/2$ until:
 
 \[f(\theta_n + \alpha \delta_n) < f(\theta_n) + c \alpha \nabla f(\theta_n)^\top \delta_n\]
 
