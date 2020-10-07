@@ -1,12 +1,12 @@
 \chapter{Conclusions}
 
-As this thesis's purpose was the proof-of-concept of this regularization, MCR, the effects have been established, and the purpose is achieved. Data points to the regularization being useful. Further study is required to establish a scaling in activity of the regularization for larger NNs.
+As this thesis's purpose was the proof-of-concept of this regularization, MCR, the effects have been established, and the purpose is achieved. Data points to the regularization being useful. Further study is required to establish a scaling in the activity of the regularization for larger NNs.
 
 The algorithm hints at a method of initializing a network by continuously perturbing the network pre-training until some threshold value is met. 
 
-As mentioned, a way to combat the standard deviation instability is regularizing the parameter update produced in CG by perturbing and benchmarking it in a similar way to MCR on a selection set. Drawing from micro-canonical sampling, which treats energy as a conserved quantity, to limit the effect on the selection set cross-entropy of a mini-batch update. The analogy is to a micro-canonical simulation in which a demon considers changes in energy. For example, by producing an extensive update on the selection set and projecting smaller updates from mini-batches to update parameters by considering more information at each mini-batch or randomly benchmarking perturbing the updates.
+As mentioned, a way to combat the standard deviation instability is regularizing the parameter update produced in CG by perturbing and benchmarking it in a similar way to MCR on a selection set, inspired from micro-canonical sampling, which treats energy as a conserved quantity, to limit the effect on the selection set cross-entropy of a mini-batch update. The analogy is to a micro-canonical simulation. A demon considers changes in energy, for example, by producing an extensive update on the selection set and projecting smaller updates from mini-batches to update parameters by considering more information at each mini-batch or randomly benchmarking perturbing the generated updates.
 
-Lastly, regulating the mini-batch size could be done similarly, if the selection set performance goes down to increase the mini-batch size and vice versa, somewhat like sampling different temperatures, regulating how much information is considered in each update of the NN parameters. Nevertheless, this relates to further study and merely is concepts derived from this successful regularization technique.
+Lastly, regulating the mini-batch size could be done similarly. If the selection set performance goes down to increase the mini-batch size and vice versa, somewhat like sampling different temperatures, regulating how much information is considered in each update of the NN parameters. Nevertheless, this relates to further study and merely is concepts derived from this successful regularization technique.
 
 The study of the hidden state size was omitted; however, a very rudimentary comment is that increasing the hidden layer size directly increases the hidden state's size.
 

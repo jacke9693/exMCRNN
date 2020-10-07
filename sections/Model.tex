@@ -4,7 +4,7 @@ This section firstly describes the underlying theory of computational graphs, se
 
 \section{Differentiable Computational Graph}
 
-Before introducing artificial neural networks as such, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Firstly is the efficient computation of derivatives of any function $F = F(\theta)$ that can be evaluated with such a graph, where $\theta$ are the parameters rather than an input pattern. The introduction in the form of graphs for these algorithms shows the inductive and algorithmic calculation of the derivatives.
+Before introducing artificial neural networks, the mathematical foundation needs to be formalized as the regularization, to be well-defined, couples to the underlying theory of graphs. Firstly is the efficient computation of derivatives of any function $F = F(\theta)$ that can be evaluated with such a graph, where $\theta$ are the parameters rather than an input pattern. The introduction in the form of graphs for these algorithms shows the inductive and algorithmic calculation of the derivatives.
 
 Considering a graph over $N$ nodes, $\{1, ..., N\} = \mathcal{N}$ where $I \subset \mathcal{N}$ is the subset consisting of the input nodes and $O \subset \mathcal{N}$ is the subset of output nodes. Each node $i$ has a set of parents $P_i$, determining its input, and a differentiable function $f_i$. For the above an algorithm for evaluating $F(\theta)$ on a computational graph \cite{suts}:
 
@@ -18,7 +18,7 @@ Considering a graph over $N$ nodes, $\{1, ..., N\} = \mathcal{N}$ where $I \subs
 \end{algorithmic}
 
 \noindent
-where every node $z_i$ can be vector-valued and $\text{concat}$ is simply the concatenation over the parent set. The formalism relates straightforwardly to forward propagation of neural networks.
+where every node $z_i$ can be vector-valued and $\text{concat}$ is simply the concatenation over the parent set. The formalism relates straightforwardly to the forward propagation of neural networks.
 
 Introducing a training error of the form $C(F(\theta)) = C(z_N)$, $C$ is the cost function and $F(\theta)$ is the model's prediction on all samples. The derivative of $C(z_N)$ w.r.t. $\theta$ is given by $F'(\theta)^\intercal C'(z_N)$. The backpropagation algorithm calculates the product $F'(\theta)^\intercal v$ for arbitrary vector $v$ with according dimensionality of $z_N$ \cite{suts}:
 
@@ -99,7 +99,7 @@ The forward propagation through the network of an input sequence \((i_1, i_2, ..
 \end{algorithmic}
 
 \noindent
-where $h_0 = 0$. $a_h(*)$ and $a_o(*)$ are nonlinear activation functions for the hidden and output layer respectively. The input is distributed over the input nodes and the information propagates forward through the RNN, collecting at the output nodes creating an output sequence. The relation to the graph formalism and evaluation of a function $F(\theta)$ is clear. The cost function is usually defined as a sum of per-timestep cost:
+where $h_0 = 0$. $a_h(*)$ and $a_o(*)$ are nonlinear activation functions for the hidden and output layer respectively. The input is distributed over the input nodes, and the information propagates forward through the RNN, collecting at the output nodes creating an output sequence. The relation to the graph formalism and evaluation of a function $F(\theta)$ is clear. The cost function is usually defined as a sum of per-timestep cost:
 
 \[C(o, y) = \sum_{t=1}^{T}C(o_t; y_t)\]
 
@@ -122,7 +122,7 @@ for some target sequence $y_t$. With the cost function a derivative for the RNNs
 \end{algorithmic}
 
 \noindent
-the name relates to the rewinding of the forward propagation. With the pre-evaluated forward propagation related quantities, the error is pushed back through the NN and the derivative is calculated. As can be seen backpropagation through time starts from $t=T$ down to one.
+the name relates to the rewinding of the forward propagation. With the pre-evaluated forward propagation related quantities, the error is pushed back through the NN, and the derivative is calculated. As can be seen, backpropagation through time starts from $t=T$ down to one.
 
 As mentioned, there are difficulties in training RNNs; however, resorting to second-order methods solves some issues. This thesis includes the implementation of the HF optimization \cite{suts} in algorithm \ref{HF}, which is a second-order method avoiding explicit calculation of the Hessian matrix. Combined with the R-method, the two above algorithms are practically sufficient for calculating the product $Hv$. 
 
@@ -216,7 +216,7 @@ where $c = 10^{-2}$ is set.
 
 \section{Monte Carlo Regularization}
 
-As mentioned above, the MCR in algorithm \ref{MCR} gathers from the grand canonical ensemble (GCE) simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. In this section "energy" refers to the cost.
+As mentioned above, the MCR in algorithm \ref{MCR} gathers from the grand canonical ensemble (GCE) simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. In this section, "energy" refers to the cost.
 
 \begin{algorithm}[h]
     \caption{Monte Carlo regularization}
@@ -242,4 +242,4 @@ where $f(i^n, \theta)= o^n$ and the superscript $n$ is the sample.
 
 The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch, the lesser the probability. The relaxation is to avoid a last-minute perturbation. The purpose of computing the energy difference solely on the selection set was, in part, due to the size of the training set being too large and improving generalization; thus, an external set was used. Furthermore, a subset of the selection set was used to evaluate weight deletion as they number many more than the nodes. The rejection can be softened to allow small decreases in performance; however, there is no a priori motivation. The distribution used was softmax; however, a preference for some moves can be established with a more askew distribution, and better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to survey the effects of the different moves better.  
 
-The relation to the GCE simulation is the insertion and deletion of nodes. Similarly, as with configurational bias, a randomly generated node seems unlikely to produce an improvement, and therefore it is sampled from an existing node. The parameters related to the new node is then slightly, randomly, changed. However, in contrast to GCE, no favor in size is selected and the number of nodes of the network are not implemented to drift.
+The relation to the GCE simulation is the insertion and deletion of nodes. Similarly, as with configurational bias, a randomly generated node seems unlikely to produce an improvement, and therefore it is sampled from an existing node. The parameters related to the new node is then slightly, randomly, changed. However, in contrast to GCE, no favor in size is selected, and the number of nodes of the network is not implemented to drift.
