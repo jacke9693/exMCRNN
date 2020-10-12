@@ -1,7 +1,7 @@
 
 \chapter{Introduction}
 
-In the introduction a presentation of the artificial neural network is included. The more ground treatment is due to a background of physics rather than data science. The next necessary section is a deep-dive into the deep learning field; thus, a literary study is included to set a proper context for recurrent neural networks and their history. Then a brief section of regularization and the different methods used in conjunction with the training of neural networks. Motivation is the section after that with a record of how the monte carlo regularization method came to be. Lastly, related work to the regularization specifically is included.
+In the introduction, first comes the thesis's aim, then a presentation of the artificial neural network is included. The more ground treatment is due to a background in physics rather than data science. The next necessary section is a deep-dive into the deep learning field; thus, a literary study is included to set a proper context for recurrent neural networks and their history. Then a brief section of regularization and the different methods used in conjunction with neural networks training. Motivation is the section after that with a record of how the Monte Carlo Regularization method came to be. Lastly, related work to the regularization specifically is included.
 
 \section{Aim}
 
@@ -9,20 +9,27 @@ In this master thesis, the prospect of a recurrent neural network (RNN) with a s
 
 \section{Neural networks}
 
+Artificial neural networks consider the elements of propagation and the structure of biological neural networks. An input generates a signal sent through the network from layer to layer, which consists of nodes, corresponding to neurons. The layers vary in size with the application or data analyzed. The connections between the nodes correspond to synapses; dependencies allowed give rise to different neural networks. Both nodes and connections pertain to a strength, denoted bias, and weight, respectively. These biases and weights establish the parameters of the artificial neural network. 
+
+In a basic artificial feed-forward neural network, where signals proceed without recurrence, there is an input, a hidden and an output layer of nodes, see Fig. \ref{feed}. The data set and related task determine the input and output layer; the hidden layer is the computational one, and often one is enough. This result is due to the universal approximation theorem. The processing of input and subsequent signal propagation creates a response that can read as output. The output can then be compared to a target output; the discrepancy between the two then constitutes an error. The error is then sent back through the network and utilized to adjust parameters; after a sufficient successive amount of such trials, the neural network is trained. 
+
 \begin{figure}[h]
     \centering
+    \textbf{A representation of a neural network as a graph}
     \begin{neuralnetwork}[height=4]
         \newcommand{\x}[2]{$x_#2$}
         \newcommand{\y}[2]{$\hat{y}_#2$}
         \newcommand{\hfirst}[2]{\small $h^{(1)}_#2$}
         \newcommand{\hsecond}[2]{\small $h^{(2)}_#2$}
-        \inputlayer[count=3, bias=true, title=Input\\layer, text=\x]
+        \inputlayer[count=2, bias=true, title=Input\\layer, text=\x]
         \hiddenlayer[count=4, bias=false, title=Hidden\\layer 1, text=\hfirst] \linklayers
-        \hiddenlayer[count=3, bias=false, title=Hidden\\layer 2, text=\hsecond] \linklayers
         \outputlayer[count=2, title=Output\\layer, text=\y] \linklayers
     \end{neuralnetwork}
-    \caption{Feed forward network}
+    \caption{A feedforward network, with a single hidden layer. The input proceeds from left to right.}
+    \label[fig]{feed}
 \end{figure}
+
+Allowing for additional hidden layers approaches deep learning. Another way is to allow for recursion in the hidden layer. Such modification relates to the specialization of the network to more complicated tasks.
 
 
 \section{Recurrent Neural Network - History}
@@ -86,5 +93,3 @@ Weakening the stochastic activation of dropout in the sense of periodically mana
 The attention-based model mentioned earlier was first introduced by \textcite{att}, improving the encoder decoder-based approach, which utilizes RNNs typically for machine translation. By weighing information based on a context given by the encoder, then generating a sentence from a picture or translating a sentence with the decoder, usually an LSTM. As RNNs and LSTMs still suffer from being unable to capture long data sequences, attention-based models are an effort to counter the problem by screening information. The concept has evolved into altogether attention-based architectures without RNNs such as the Transformer \cite{trans}, which has outperformed its predecessors. This introduced the notion of self-attention. The MCR could be thought of in a similar manner, where self-reflection is made to evaluate the current structure. 
 
 Of general importance is the universal approximation theorem, which states that a feed-forward neural network is able to approximate any Borel measurable function on a compact domain. A proof has been done even for the case of RNN \cite{uarnn} and of interest is the particular evolving structure and its implications of the proposed MCR. However, this will not be studied in this thesis.
-
-%attention, resnet, self-attention, tcm, hidden state theory, physics context
