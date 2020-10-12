@@ -11,7 +11,7 @@ In this master thesis, the prospect of a recurrent neural network (RNN) with a s
 
 Artificial neural networks consider the elements of propagation and the structure of biological neural networks. An input generates a signal sent through the network from layer to layer, which consists of nodes, corresponding to neurons. The layers vary in size with the application or data analyzed. The connections between the nodes correspond to synapses; dependencies allowed give rise to different neural networks. Both nodes and connections pertain to a strength, denoted bias, and weight, respectively. These biases and weights establish the parameters of the artificial neural network. 
 
-In a standard artificial feed-forward neural network, where signals proceed without recurrence, there is an input, a hidden and an output layer of nodes, see Fig. \ref{feed}. The data set and related task determine the input and output layer; the hidden layer is the computational one, and often one is enough. This result is due to the universal approximation theorem. The processing of input and subsequent signal propagation creates a response that can read as output. The output can then be compared to a target output; the discrepancy between the two then constitutes an error. The error is then sent back through the network and utilized to adjust parameters; after a sufficient successive amount of such trials, the neural network is trained. 
+In a standard artificial feed-forward neural network, where signals proceed without recurrence, there is an input, a hidden and an output layer of nodes, see Fig. \ref{feed}. In Fig. \ref{feed}, the relation to directed acyclic graphs is illustrated. The data set and related task determine the input and output layer; the hidden layer is the computational one, and often one is enough. This result is due to the universal approximation theorem. The processing of input and subsequent signal propagation creates a response that can read as output. The output can then be compared to a target output; the discrepancy between the two then constitutes an error. The error is then sent back through the network and utilized to adjust parameters; after a sufficient successive amount of such trials, the neural network is trained. 
 
 \begin{figure}[h]
     \centering
@@ -25,7 +25,7 @@ In a standard artificial feed-forward neural network, where signals proceed with
         \hiddenlayer[count=4, bias=false, title=Hidden\\layer 1, text=\hfirst] \linklayers
         \outputlayer[count=2, title=Output\\layer, text=\y] \linklayers
     \end{neuralnetwork}
-    \caption{A feedforward network, with a single hidden layer. The input proceeds from left to right.}
+    \caption{A feedforward network, with a single hidden layer. The input proceeds from left to right in the directed graph.}
     \label[fig]{feed}
 \end{figure}
 
