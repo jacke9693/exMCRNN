@@ -1,7 +1,29 @@
 
 \chapter{Introduction}
 
-In this master thesis, the prospect of a recurrent neural network (RNN) with a stochastic structure varying in time to regularize it, Monte Carlo regularization (MCR) is presented. A regularization technique is introduced to combat overfitting for the neural network. Inspiration is drawn from biology, where neural networks organically evolve their structure, formalized in the concept of a Markov process. However, how this algorithm is structured is inspired by the physics processes of grand-canonical ensembles or processes where energy differences drive the algorithm — evaluating the energy differences of either pruning or duplication of neurons, thus regulating the structure of the neural net. The regularization is tested on an RNN. Their recurrent structure could strain this process of regularization and prove insightful. From a physicist's knowledge, a necessary step is a deep-dive into the deep learning field; thus, a literary study is included to set a proper context.
+In the introduction a presentation of the artificial neural network is included. The more ground treatment is due to a background of physics rather than data science. The next necessary section is a deep-dive into the deep learning field; thus, a literary study is included to set a proper context for recurrent neural networks and their history. Then a brief section of regularization and the different methods used in conjunction with the training of neural networks. Motivation is the section after that with a record of how the monte carlo regularization method came to be. Lastly, related work to the regularization specifically is included.
+
+\section{Aim}
+
+In this master thesis, the prospect of a recurrent neural network (RNN) with a stochastic structure varying in time to regularize it, Monte Carlo regularization (MCR) is presented. A regularization technique is introduced to combat overfitting for the neural network. Inspiration is drawn from biology, where neural networks organically evolve their structure, formalized in the concept of a Markov process. However, how this algorithm is structured is inspired by the physics processes of grand-canonical ensembles or processes where energy differences drive the algorithm — evaluating the energy differences of either pruning or duplication of neurons, thus regulating the structure of the neural net. The regularization is tested on an RNN. Their recurrent structure could strain this process of regularization and prove insightful. 
+
+\section{Neural networks}
+
+\begin{figure}[h]
+    \centering
+    \begin{neuralnetwork}[height=4]
+        \newcommand{\x}[2]{$x_#2$}
+        \newcommand{\y}[2]{$\hat{y}_#2$}
+        \newcommand{\hfirst}[2]{\small $h^{(1)}_#2$}
+        \newcommand{\hsecond}[2]{\small $h^{(2)}_#2$}
+        \inputlayer[count=3, bias=true, title=Input\\layer, text=\x]
+        \hiddenlayer[count=4, bias=false, title=Hidden\\layer 1, text=\hfirst] \linklayers
+        \hiddenlayer[count=3, bias=false, title=Hidden\\layer 2, text=\hsecond] \linklayers
+        \outputlayer[count=2, title=Output\\layer, text=\y] \linklayers
+    \end{neuralnetwork}
+    \caption{Feed forward network}
+\end{figure}
+
 
 \section{Recurrent Neural Network - History}
 
