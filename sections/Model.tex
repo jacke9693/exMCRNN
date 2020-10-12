@@ -221,7 +221,7 @@ where $c = 10^{-2}$ is set.
 
 \section{Monte Carlo Regularization}
 
-The regularization MCR, to be well-defined, couples to the underlying theory of graphs, which will be discussed next. As mentioned above, the MCR in algorithm \ref{MCR} gathers from the grand canonical ensemble (GCE) simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. In this section, "energy" refers to the cost.
+The regularization MCR, to be well-defined, couples to the underlying theory of graphs, which will be discussed next. As mentioned above, the MCR in algorithm \ref{MCR} gathers from the grand canonical ensemble (GCE) simulation. The operators for a node $i$ corresponding to the allowed moves, $D_i$ deletes node $i$, $C_i$ copies node $i$ and $D_{ij}$ deletes the weight between node $i,j$ in the NN. These operators induce energy differences $E_D$, $E_C$ and $E_d$ respectively. The reason for disregarding the duplication of weights is their additive property, effectively doubling the strength of the weight. In this section, "energy" refers to the cost.
 
 \begin{algorithm}[h]
     \caption{Monte Carlo regularization}
