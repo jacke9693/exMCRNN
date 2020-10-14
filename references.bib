@@ -6,7 +6,54 @@
   volume  = {31},
   pages   = {855–868}
 }
-
+@article{pepe,
+author = {Pearlmutter, Barak A.},
+title = {Fast Exact Multiplication by the Hessian},
+year = {1994},
+issue_date = {Jan. 1994},
+publisher = {MIT Press},
+address = {Cambridge, MA, USA},
+volume = {6},
+number = {1},
+issn = {0899-7667},
+url = {https://doi.org/10.1162/neco.1994.6.1.147},
+doi = {10.1162/neco.1994.6.1.147},
+abstract = {Just storing the Hessian H (the matrix of second derivatives
+δ2E/δwiδ
+wj of the error E with respect to each
+pair of weights) of a large neural network is difficult. Since a
+common use of a large matrix like H is to compute its product with
+various vectors, we derive a technique that directly calculates Hv,
+where v is an arbitrary vector. To calculate Hv, we first define a
+differential operator Rv{f(w)} =
+(δ/δr)f(w + rv)|r=0, note that
+Rv{∇w} = Hv and Rv{w} =
+v, and then apply Rv{·} to the equations
+used to compute ∇w. The result is an exact and
+numerically stable procedure for computing Hv, which takes about as
+much computation, and is about as local, as a gradient evaluation.
+We then apply the technique to a one pass gradient calculation
+algorithm (backpropagation), a relaxation gradient calculation
+algorithm (recurrent backpropagation), and two stochastic gradient
+calculation algorithms (Boltzmann machines and weight
+perturbation). Finally, we show that this technique can be used at
+the heart of many iterative techniques for computing various
+properties of H, obviating any need to calculate the full
+Hessian.},
+journal = {Neural Comput.},
+month = jan,
+pages = {147–160},
+numpages = {14}
+}
+@inproceedings{Yann,
+author = {Lecun, Yann and Denker, John and Solla, Sara},
+year = {1989},
+month = {01},
+pages = {598-605},
+title = {Optimal Brain Damage},
+volume = {2},
+journal = {Advances in Neural Information Processing Systems}
+}
 @book{DRNNS,
   author    = {J.F. Kohlen, S. C. Kremer},
   title     = {A Field Guide to Dynamical Recurrent Networks},
@@ -320,4 +367,13 @@ and M{\"u}ller, Klaus-Robert},
   isbn      = {978-3-642-35289-8},
   doi       = {10.1007/978-3-642-35289-8_27},
   url       = {https://doi.org/10.1007/978-3-642-35289-8_27}
+}
+@Book{NoceWrig06,
+  Title                    = {Numerical Optimization},
+  Author                   = {Jorge Nocedal and Stephen J. Wright},
+  Publisher                = {Springer},
+  Year                     = {2006},
+
+  Address                  = {New York, NY, USA},
+  Edition                  = {second}
 }
