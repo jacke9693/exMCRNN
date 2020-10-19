@@ -243,7 +243,7 @@ The regularization MCR, to be well-defined, couples to the underlying theory of 
 \end{algorithm}
 
 \noindent
-where $f(i^n, \theta)= o^n$ and the superscript $n$ is the sample.
+Where in \ref{MCR} $f(i^n, \theta)= o^n$ and the superscript $n$ is the sample.
 
 The decision to perturb the network is based on a relaxation of the number of epochs, the later the epoch, the lesser the probability. The relaxation is to avoid a last-minute perturbation. The purpose of computing the energy difference solely on the selection set was, in part, due to the size of the training set being too large and improving generalization; thus, an external set was used. Furthermore, a subset of the selection set was used to evaluate weight deletion as they number many more than the nodes. The rejection can be softened to allow small decreases in performance; however, there is no a priori motivation. The distribution used was softmax; however, a preference for some moves can be established with a more askew distribution, and better reflect the relative $\Delta E$ differences. Finally, randomly choosing one move was to survey the effects of the different moves better.  
 
