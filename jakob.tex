@@ -27,6 +27,13 @@
 \usepackage[sorting=none]{biblatex}
 \usepackage{url}
 \usepackage{neuralnetwork}
+\usepackage{afterpage}
+
+\newcommand\blankpage{%
+    \null
+    \thispagestyle{empty}%
+    \addtocounter{page}{-1}%
+    \newpage}
 
 \usetikzlibrary{positioning,chains}
 
